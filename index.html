@@ -30,33 +30,41 @@
     .tab-content { padding: 12px; padding-bottom: 90px; }
     .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; display: flex; align-items: center; gap: 8px; }
 
-    /* BOTÕES DE ALTERNÂNCIA */
+    /* BOTÕES DE ALTERNÂNCIA (MÊS) */
     .toggle-container { display: flex; gap: 8px; margin-bottom: 15px; }
     .btn-toggle { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: 2px solid var(--primary); }
     .btn-toggle.active { background: var(--primary); color: white; }
     .btn-toggle.inactive { background: white; color: var(--primary); }
 
-    /* FILTROS GESTÃO (ESTILO v1) */
+    /* FILTROS GESTÃO */
     .filter-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .btn-filter { padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid #ccc; background: white; color: #666; white-space: nowrap; transition: 0.2s; }
     .btn-filter.active[data-f="pendente"] { background: #fff3cd; color: #856404; border-color: #ffeeba; }
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* VISUALIZADOR PDF */
+    /* VISUALIZADOR DE DOCUMENTOS */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #f8f9fa; border-bottom: 1px solid #eee; }
-    .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 11px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 11px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+    .btn-action:last-child { border-right: none; }
     iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    /* CARDS DE PEDIDOS */
-    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; position: relative; }
+    /* FORMULÁRIO DE TROCAS (LAYOUT V1 EXATO) */
+    .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); }
+    .form-card h3 { color: var(--secondary); font-size: 16px; margin-bottom: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; display: block; }
+    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
+    .form-card textarea { resize: none; min-height: 80px; }
+
+    /* CARDS DE HISTÓRICO / GESTÃO */
+    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; }
     .pedido-header { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
     .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: #333; }
     .pedido-obs { font-size: 12px; color: #666; font-style: italic; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 8px; }
     .pedido-footer { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
     
-    /* CORES DE STATUS NOS CARDS */
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: #2AA8A8; }
     .card-reprovado { border-left-color: #e74c3c; }
@@ -152,21 +160,38 @@
 
   <div id="tab-pedidos" class="tab-content hidden">
     <div class="section-title">🔄 Pedido de Troca</div>
-    <div class="card" style="border-left-color: var(--secondary);">
-        <h3 style="color:var(--secondary); font-size:16px; margin-bottom:15px;">Nova Solicitação</h3>
-        <label class="form-label">📅 O meu turno</label>
-        <input type="date" id="p-meu-data">
-        <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã (8h-16h)">
-        <label class="form-label">🔄 Turno pretendido</label>
-        <input type="date" id="p-pret-data">
-        <input type="text" id="p-pret-periodo" placeholder="Ex: Tarde (16h-00h)">
-        <label class="form-label">👤 Colega para trocar</label>
-        <select id="p-colega-select"><option value="">A carregar colegas...</option></select>
-        <label class="form-label">💬 Observações</label>
-        <textarea id="p-motivo" placeholder="Motivo da troca..." style="width:100%; height:80px; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #ddd;"></textarea>
-        <button class="btn-main" id="btn-enviar-pedido">Enviar Pedido</button>
-        <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:12px;"></div>
+    
+    <div class="form-card">
+        <h3>Nova Solicitação</h3>
+        
+        <div class="form-group">
+            <label class="form-label">📅 O meu turno</label>
+            <input type="date" id="p-meu-data">
+            <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🔄 Turno pretendido</label>
+            <input type="date" id="p-pret-data">
+            <input type="text" id="p-pret-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">👤 Colega para trocar</label>
+            <select id="p-colega-select">
+                <option value="">-- Seleciona colega --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">💬 Motivo</label>
+            <textarea id="p-motivo" placeholder="Descrição opcional..."></textarea>
+        </div>
+
+        <button class="btn-main" id="btn-enviar-pedido" style="margin-top:0;">Enviar Pedido</button>
+        <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:13px;"></div>
     </div>
+
     <div class="section-title">📋 Meus Pedidos</div>
     <div id="meus-pedidos"></div>
   </div>
@@ -230,17 +255,43 @@
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // VISUALIZADOR PDF
+  // --- VISUALIZADOR DE DOCUMENTOS E BOTÕES INTELIGENTES ---
   function setViewer(divId, fId, pId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
-    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:20px; color:#aaa; text-align:center;'>Link não disponível.</p>"; return; }
-    let url = rawUrl.includes('<iframe') ? rawUrl.match(/src="([^"]+)"/)[1] : rawUrl.trim();
-    if (url.includes("1drv.ms") && !url.includes("action=")) url += (url.includes("?") ? "&" : "?") + "action=embedview";
-    if (fId) document.getElementById(fId).href = url.replace("action=embedview", "");
-    wrapper.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+    
+    if (!rawUrl) { 
+        wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível no servidor.</p>"; 
+        return; 
+    }
+    
+    // Extrai o URL puro mesmo que venha como iframe
+    let url = rawUrl;
+    if (url.includes('<iframe')) {
+        const match = url.match(/src="([^"]+)"/);
+        if (match) url = match[1];
+    }
+    url = url.trim();
+
+    // Cria o link para Embutir (Iframe)
+    let embedUrl = url;
+    if (embedUrl.includes("1drv.ms") && embedUrl.includes("/b/") && !embedUrl.includes("action=")) {
+        embedUrl += (embedUrl.includes("?") ? "&" : "?") + "action=embedview";
+    }
+
+    // Cria o link Limpo para Tela Cheia (Botões)
+    let fullUrl = url.replace("action=embedview", "").replace("&em=2", "");
+
+    // Configura os botões
+    const btnF = document.getElementById(fId);
+    const btnP = document.getElementById(pId);
+    if (btnF) { btnF.href = fullUrl; }
+    if (btnP) { btnP.href = fullUrl; }
+
+    wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
 
+  // --- INICIALIZAÇÃO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
@@ -259,13 +310,14 @@
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) { userRole = p.data().role; carregarColegasRole(); }
 
+      // Atenção: Firebase busca "lista_telefonica", div tem id="div-tel", botão tem id="f-tel"
       onSnapshot(doc(db, "Config", "links_v2"), snap => {
         if (snap.exists()) {
           linksDB = snap.data();
           setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
           setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual);
           setViewer("div-oncall", "f-oncall", null, linksDB.oncall);
-          setViewer("div-tel", "f-tel", null, linksDB.telefones);
+          setViewer("div-tel", "f-tel", null, linksDB.lista_telefonica); 
         }
       });
 
@@ -277,16 +329,16 @@
     }
   });
 
-  // GESTÃO COM FILTROS (QUERY FIREBASE v1 STYLE)
+  // --- GESTÃO DE TROCAS (V1 STYLE) ---
   function carregarGestao() {
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? `<p style='padding:20px; color:#aaa; text-align:center;'>Sem pedidos ${filtroGestao}s.</p>` : "";
+        div.innerHTML = snap.empty ? `<p style='padding:20px; color:#aaa; text-align:center;'>Sem pedidos em estado ${filtroGestao}.</p>` : "";
         
         snap.forEach(d => {
             const p = d.data();
-            const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Data indisponível";
+            const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Agora";
             const card = document.createElement("div");
             card.className = `card card-${p.status}`;
             
@@ -309,7 +361,6 @@
     });
   }
 
-  // EVENTOS FILTROS GESTÃO
   document.querySelectorAll(".btn-filter").forEach(btn => {
       btn.addEventListener("click", () => {
           document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("active"));
@@ -319,40 +370,104 @@
       });
   });
 
-  window.decidir = async (id, s) => { if(confirm(`Confirmar ${s}?`)) await updateDoc(doc(db, "Pedidos", id), { status: s }); };
+  window.decidir = async (id, s) => { if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) await updateDoc(doc(db, "Pedidos", id), { status: s }); };
 
-  // MEUS PEDIDOS (DASHBOARD UTILIZADOR)
+  // --- O MEU HISTÓRICO DE PEDIDOS ---
   function carregarMeusPedidos() {
     onSnapshot(query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc")), snap => {
         const div = document.getElementById("meus-pedidos");
-        div.innerHTML = "";
+        div.innerHTML = snap.empty ? "<p style='font-size:13px; color:#aaa;'>Nenhum pedido efetuado.</p>" : "";
         snap.forEach(d => {
             const p = d.data();
-            const cardClass = `card card-${p.status}`;
+            const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Recente";
             div.innerHTML += `
-                <div class="${cardClass}">
+                <div class="card card-${p.status}">
+                    <div class="pedido-header">Para: ${p.colega_nome}</div>
                     <div class="pedido-corpo">🔄 <strong>${p.meuTurno}</strong> ➡️ <strong>${p.turnoPretendido}</strong></div>
-                    <div style="font-size:12px; color:#666;">Com: ${p.colega_nome}</div>
-                    <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
+                    <div class="pedido-footer">
+                        <span>📅 ${dataStr}</span>
+                        <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
+                    </div>
                 </div>`;
         });
     });
   }
 
-  // AVISOS
+  // --- FORMULÁRIO DE NOVO PEDIDO ---
+  async function carregarColegasRole() {
+      const q = query(collection(db, "Utilizadores"), where("role", "==", userRole));
+      const snap = await getDocs(q);
+      const sel = document.getElementById("p-colega-select");
+      sel.innerHTML = '<option value="">-- Seleciona colega --</option>';
+      snap.forEach(d => {
+          if (d.data().email !== currentUser.email) {
+              const opt = document.createElement("option"); opt.value = d.data().email; opt.dataset.nome = d.data().nome; opt.textContent = d.data().nome;
+              sel.appendChild(opt);
+          }
+      });
+  }
+
+  const formatarParaDB = (data, periodo) => {
+      if(!data) return periodo;
+      const d = new Date(data + "T00:00:00");
+      return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
+  };
+
+  document.getElementById("btn-enviar-pedido").onclick = async () => {
+      const msg = document.getElementById("pedido-msg");
+      const colega = document.getElementById("p-colega-select");
+      
+      const meuD = document.getElementById("p-meu-data").value;
+      const meuP = document.getElementById("p-meu-periodo").value;
+      const pretD = document.getElementById("p-pret-data").value;
+      const pretP = document.getElementById("p-pret-periodo").value;
+      const obs = document.getElementById("p-motivo").value;
+      
+      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { 
+          msg.innerHTML = "<span style='color:red;'>❌ Preencha todas as datas e o colega.</span>"; 
+          return; 
+      }
+
+      msg.innerHTML = "⏳ A gravar o pedido...";
+
+      try {
+          const meuTurnoFinal = formatarParaDB(meuD, meuP);
+          const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
+
+          const docRef = await addDoc(collection(db, "Pedidos"), {
+              uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email,
+              meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, 
+              colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome,
+              descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
+          });
+          
+          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id });
+          
+          msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
+          
+          // Reset Form
+          document.getElementById("p-meu-periodo").value = "";
+          document.getElementById("p-pret-periodo").value = "";
+          document.getElementById("p-motivo").value = "";
+      } catch(e) { msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação com o servidor.</span>"; }
+  };
+
+  // --- AVISOS ---
   function carregarAvisos() {
     onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
         const div = document.getElementById("lista-avisos");
         div.innerHTML = "";
         snap.forEach(d => {
             const a = d.data();
+            const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
             const card = document.createElement("div"); card.className = "card";
             card.innerHTML = `
-                <strong>👤 ${a.autor}</strong><div style="font-size:14px; margin:8px 0;">${a.texto}</div>
+                <div style="display:flex; justify-content:space-between;"><strong>👤 ${a.autor}</strong><span style="font-size:11px; color:#aaa;">${dataAviso}</span></div>
+                <div style="font-size:14px; margin:10px 0; white-space:pre-wrap;">${a.texto}</div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:10px; padding:6px; border-radius:6px; border:1px solid var(--primary); background:none; color:var(--primary); cursor:pointer;">✅ Confirmar Leitura</button>
-                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:10px; color:var(--secondary); border:none; background:none; cursor:pointer;">👁️ Ver quem viu</button>` : ""}
-                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>` : ""}
+                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:10px; padding:6px 12px; border-radius:6px; border:1px solid var(--primary); background:#e6f4f4; color:var(--primary); font-weight:bold; cursor:pointer;">✅ Confirmar Leitura</button>
+                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:10px; color:var(--secondary); font-weight:bold; border:none; background:none; cursor:pointer;">👁️ Ver quem viu</button>` : ""}
+                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer; font-size:14px; color:red;">🗑️</button>` : ""}
                 </div>`;
             div.appendChild(card);
         });
@@ -367,48 +482,10 @@
       document.getElementById("modal-vistos").classList.remove("hidden");
   };
 
-  window.confirmarLeitura = async (id) => { await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() }); alert("Confirmado!"); };
-  window.apagarAviso = async (id) => { if(confirm("Apagar aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
+  window.confirmarLeitura = async (id) => { await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() }); alert("Leitura confirmada com sucesso."); };
+  window.apagarAviso = async (id) => { if(confirm("Tem a certeza que quer apagar este aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
 
-  // TROCAS (PEDIR)
-  async function carregarColegasRole() {
-      const q = query(collection(db, "Utilizadores"), where("role", "==", userRole));
-      const snap = await getDocs(q);
-      const sel = document.getElementById("p-colega-select");
-      sel.innerHTML = '<option value="">Selecionar Colega</option>';
-      snap.forEach(d => {
-          if (d.data().email !== currentUser.email) {
-              const opt = document.createElement("option"); opt.value = d.data().email; opt.dataset.nome = d.data().nome; opt.textContent = d.data().nome;
-              sel.appendChild(opt);
-          }
-      });
-  }
-
-  document.getElementById("btn-enviar-pedido").onclick = async () => {
-      const colega = document.getElementById("p-colega-select");
-      const meuD = document.getElementById("p-meu-data").value;
-      const meuP = document.getElementById("p-meu-periodo").value;
-      const pretD = document.getElementById("p-pret-data").value;
-      const pretP = document.getElementById("p-pret-periodo").value;
-      
-      if(!colega.value || !meuD || !pretD) { alert("Preencha as datas e o colega."); return; }
-
-      const meuTurno = new Date(meuD + "T00:00:00").toLocaleDateString("pt-PT", {day:"2-digit",month:"2-digit"}) + ", " + meuP;
-      const pretTurno = new Date(pretD + "T00:00:00").toLocaleDateString("pt-PT", {day:"2-digit",month:"2-digit"}) + ", " + pretP;
-
-      try {
-          const docRef = await addDoc(collection(db, "Pedidos"), {
-              uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email,
-              meuTurno, turnoPretendido: pretTurno, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome,
-              descricao: document.getElementById("p-motivo").value,
-              status: "pendente", role: userRole, createdAt: serverTimestamp()
-          });
-          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurno, pedido_id: docRef.id });
-          alert("Pedido enviado!");
-      } catch(e) { alert("Erro ao enviar."); }
-  };
-
-  // NAVEGAÇÃO E BOTÕES
+  // --- NAVEGAÇÃO E BOTÕES UI ---
   document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-content").forEach(t => t.classList.add("hidden"));
       document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
@@ -417,16 +494,19 @@
   }));
 
   const updateVisual = (a, i) => { a.classList.replace('inactive', 'active'); i.classList.replace('active', 'inactive'); };
+  
   document.getElementById("btn-tec-atual").onclick = () => { updateVisual(document.getElementById("btn-tec-atual"), document.getElementById("btn-tec-prox")); setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual); };
   document.getElementById("btn-tec-prox").onclick = () => { updateVisual(document.getElementById("btn-tec-prox"), document.getElementById("btn-tec-atual")); setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_proximo); };
+  
   document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual); };
   document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_proximo); };
 
   document.getElementById("btn-login").onclick = () => {
       const u = document.getElementById("login-email").value.trim();
-      signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", document.getElementById("login-pass").value).catch(() => alert("Erro!"));
+      signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", document.getElementById("login-pass").value).catch(() => document.getElementById("login-error").textContent = "Credenciais inválidas.");
   };
   document.getElementById("btn-logout").onclick = () => signOut(auth);
+
 </script>
 </body>
 </html>
