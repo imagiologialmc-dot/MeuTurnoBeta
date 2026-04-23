@@ -7,7 +7,8 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2AA8A8">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-512.jpg">
+  <link rel="icon" type="image/jpeg" href="icon-512.jpg">
   <style>
     :root { --primary: #2AA8A8; --secondary: #2D6E8E; --bg: #f0f4f7; --white: #ffffff; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -80,7 +81,7 @@
     .nav-btn.active { color: var(--primary); font-weight: 700; }
     .nav-btn .icon { font-size: 22px; }
 
-    /* MODAIS GERAIS (FUNDO ESCURO) */
+    /* MODAIS GERAIS */
     .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
   </style>
 </head>
@@ -267,7 +268,7 @@
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // --- MOTOR DE NOTIFICAÇÕES & VERIFICAÇÃO ---
+  // --- MOTOR DE NOTIFICAÇÕES ---
   async function pedirNotificacoes() {
     if (!('Notification' in window)) return;
     try {
@@ -296,7 +297,7 @@
       await pedirNotificacoes();
   };
 
-  // --- VISUALIZADOR DE DOCUMENTOS COM DOWNLOAD FORÇADO ---
+  // --- VISUALIZADOR DE DOCUMENTOS ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
@@ -408,7 +409,6 @@
       });
   });
 
-  // FUNÇÃO DECIDIR (COM PREVENÇÃO DE DUPLO CLIQUE)
   window.decidir = async (btn, id, s) => { 
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
           btn.disabled = true;
@@ -470,7 +470,6 @@
       return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
   };
 
-  // FUNÇÃO ENVIAR PEDIDO (COM PREVENÇÃO DE DUPLO CLIQUE)
   document.getElementById("btn-enviar-pedido").onclick = async function() {
       const btn = this;
       const msg = document.getElementById("pedido-msg");
@@ -525,7 +524,7 @@
       }
   };
 
-  // --- AVISOS E QUEM VIU ---
+  // --- AVISOS ---
   function carregarAvisos() {
     onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
         const div = document.getElementById("lista-avisos");
@@ -549,7 +548,6 @@
     });
   }
 
-  // PUBLICAR AVISO (COM PREVENÇÃO DE DUPLO CLIQUE)
   document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
   document.getElementById("btn-publicar").addEventListener("click", async function() {
       const btn = this;
