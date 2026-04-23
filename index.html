@@ -43,14 +43,14 @@
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* VISUALIZADOR DE DOCUMENTOS */
+    /* VISUALIZADOR DE DOCUMENTOS (COM BOTÃO DE DOWNLOAD) */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
-    .viewer-actions { display: flex; background: #f8f9fa; border-bottom: 1px solid #eee; }
-    .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 11px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
-    .btn-action:last-child { border-right: none; }
+    .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid #ddd; }
+    .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
+    .btn-action:hover { background: #dce7ff; }
     iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    /* FORMULÁRIO DE TROCAS (LAYOUT V1 EXATO) */
+    /* FORMULÁRIO DE TROCAS */
     .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); }
     .form-card h3 { color: var(--secondary); font-size: 16px; margin-bottom: 15px; }
     .form-group { margin-bottom: 15px; }
@@ -120,8 +120,7 @@
     </div>
     <div class="viewer-card">
       <div class="viewer-actions">
-        <a href="#" id="f-tec" class="btn-action" target="_blank">🔍 Tela Cheia</a>
-        <a href="#" id="p-tec" class="btn-action" target="_blank">🖨️ Imprimir</a>
+        <a href="#" id="dl-tec" class="btn-action" target="_blank">📥 Fazer Download do Horário</a>
       </div>
       <div id="div-tec"></div>
     </div>
@@ -135,8 +134,7 @@
     </div>
     <div class="viewer-card">
       <div class="viewer-actions">
-        <a href="#" id="f-med" class="btn-action" target="_blank">🔍 Tela Cheia</a>
-        <a href="#" id="p-med" class="btn-action" target="_blank">🖨️ Imprimir</a>
+        <a href="#" id="dl-med" class="btn-action" target="_blank">📥 Fazer Download do Horário</a>
       </div>
       <div id="div-med"></div>
     </div>
@@ -145,7 +143,9 @@
   <div id="tab-oncall" class="tab-content hidden">
     <div class="section-title">🚨 Oncall Anestesia</div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="f-oncall" class="btn-action" target="_blank">🔍 Tela Cheia</a></div>
+      <div class="viewer-actions">
+        <a href="#" id="dl-oncall" class="btn-action" target="_blank">📥 Fazer Download do Documento</a>
+      </div>
       <div id="div-oncall"></div>
     </div>
   </div>
@@ -153,7 +153,9 @@
   <div id="tab-telefones" class="tab-content hidden">
     <div class="section-title">📞 Contactos Úteis</div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="f-tel" class="btn-action" target="_blank">🔍 Tela Cheia</a></div>
+      <div class="viewer-actions">
+        <a href="#" id="dl-tel" class="btn-action" target="_blank">📥 Fazer Download da Lista</a>
+      </div>
       <div id="div-tel"></div>
     </div>
   </div>
@@ -255,8 +257,8 @@
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // --- VISUALIZADOR DE DOCUMENTOS E BOTÕES INTELIGENTES ---
-  function setViewer(divId, fId, pId, rawUrl) {
+  // --- VISUALIZADOR E DOWNLOADER DE PDF ---
+  function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
     
@@ -265,7 +267,6 @@
         return; 
     }
     
-    // Extrai o URL puro mesmo que venha como iframe
     let url = rawUrl;
     if (url.includes('<iframe')) {
         const match = url.match(/src="([^"]+)"/);
@@ -273,20 +274,20 @@
     }
     url = url.trim();
 
-    // Cria o link para Embutir (Iframe)
+    // Link para Embed (mostrar dentro da app)
     let embedUrl = url;
     if (embedUrl.includes("1drv.ms") && embedUrl.includes("/b/") && !embedUrl.includes("action=")) {
         embedUrl += (embedUrl.includes("?") ? "&" : "?") + "action=embedview";
     }
 
-    // Cria o link Limpo para Tela Cheia (Botões)
-    let fullUrl = url.replace("action=embedview", "").replace("&em=2", "");
+    // Link para Download / Acesso Nativo no browser (tiramos as tags de iframe forçado do onedrive)
+    let dlUrl = url.replace("action=embedview", "").replace("&em=2", "");
 
-    // Configura os botões
-    const btnF = document.getElementById(fId);
-    const btnP = document.getElementById(pId);
-    if (btnF) { btnF.href = fullUrl; }
-    if (btnP) { btnP.href = fullUrl; }
+    // Configura o Botão de Download
+    const btnDl = document.getElementById(dlId);
+    if (btnDl) { 
+        btnDl.href = dlUrl; 
+    }
 
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
@@ -310,14 +311,16 @@
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) { userRole = p.data().role; carregarColegasRole(); }
 
-      // Atenção: Firebase busca "lista_telefonica", div tem id="div-tel", botão tem id="f-tel"
+      // Atenção ao detalhe: "lista telefonica" tem um espaço na DB
       onSnapshot(doc(db, "Config", "links_v2"), snap => {
         if (snap.exists()) {
           linksDB = snap.data();
-          setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
-          setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual);
-          setViewer("div-oncall", "f-oncall", null, linksDB.oncall);
-          setViewer("div-tel", "f-tel", null, linksDB.lista_telefonica); 
+          setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_atual);
+          setViewer("div-med", "dl-med", linksDB.horario_medicos_atual);
+          setViewer("div-oncall", "dl-oncall", linksDB.oncall);
+          
+          // O mistério resolvido:
+          setViewer("div-tel", "dl-tel", linksDB["lista telefonica"]); 
         }
       });
 
@@ -445,7 +448,6 @@
           
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
           
-          // Reset Form
           document.getElementById("p-meu-periodo").value = "";
           document.getElementById("p-pret-periodo").value = "";
           document.getElementById("p-motivo").value = "";
@@ -495,11 +497,11 @@
 
   const updateVisual = (a, i) => { a.classList.replace('inactive', 'active'); i.classList.replace('active', 'inactive'); };
   
-  document.getElementById("btn-tec-atual").onclick = () => { updateVisual(document.getElementById("btn-tec-atual"), document.getElementById("btn-tec-prox")); setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual); };
-  document.getElementById("btn-tec-prox").onclick = () => { updateVisual(document.getElementById("btn-tec-prox"), document.getElementById("btn-tec-atual")); setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_proximo); };
+  document.getElementById("btn-tec-atual").onclick = () => { updateVisual(document.getElementById("btn-tec-atual"), document.getElementById("btn-tec-prox")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_atual); };
+  document.getElementById("btn-tec-prox").onclick = () => { updateVisual(document.getElementById("btn-tec-prox"), document.getElementById("btn-tec-atual")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_proximo); };
   
-  document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual); };
-  document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_proximo); };
+  document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "dl-med", linksDB.horario_medicos_atual); };
+  document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "dl-med", linksDB.horario_medicos_proximo); };
 
   document.getElementById("btn-login").onclick = () => {
       const u = document.getElementById("login-email").value.trim();
