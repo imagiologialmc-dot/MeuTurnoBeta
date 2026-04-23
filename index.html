@@ -30,7 +30,7 @@
     .tab-content { padding: 12px; padding-bottom: 90px; }
     .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; display: flex; align-items: center; gap: 8px; }
 
-    /* BOTÕES MÊS */
+    /* BOTÕES DE ALTERNÂNCIA (MÊS) */
     .toggle-container { display: flex; gap: 8px; margin-bottom: 15px; }
     .btn-toggle { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: 2px solid var(--primary); }
     .btn-toggle.active { background: var(--primary); color: white; }
@@ -43,22 +43,32 @@
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* VISUALIZADOR PDF */
+    /* VISUALIZADOR DE DOCUMENTOS */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid #ddd; }
     .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
     .btn-action:hover { background: #dce7ff; }
     iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    /* CARDS & FORMULÁRIOS */
+    /* FORMULÁRIO DE TROCAS */
     .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); }
+    .form-card h3 { color: var(--secondary); font-size: 16px; margin-bottom: 15px; }
+    .form-group { margin-bottom: 15px; }
     .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; display: block; }
-    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
+    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
+    .form-card textarea { resize: none; min-height: 80px; }
+
+    /* CARDS DE HISTÓRICO / GESTÃO / AVISOS */
     .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; }
+    .pedido-header { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
+    .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: #333; }
+    .pedido-obs { font-size: 12px; color: #666; font-style: italic; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 8px; }
+    .pedido-footer { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
     
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: #2AA8A8; }
     .card-reprovado { border-left-color: #e74c3c; }
+
     .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
     .status-pendente { background: #fff3cd; color: #856404; }
     .status-aprovado { background: #d1e7dd; color: #0f5132; }
@@ -145,20 +155,24 @@
   <div id="tab-pedidos" class="tab-content hidden">
     <div class="section-title">🔄 Pedido de Troca</div>
     <div class="form-card">
-        <label class="form-label">📅 O meu turno</label>
-        <input type="date" id="p-meu-data">
-        <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
-        
-        <label class="form-label">🔄 Turno pretendido</label>
-        <input type="date" id="p-pret-data">
-        <input type="text" id="p-pret-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
-        
-        <label class="form-label">👤 Colega para trocar</label>
-        <select id="p-colega-select"><option value="">-- Seleciona colega --</option></select>
-        
-        <label class="form-label">💬 Motivo (opcional)</label>
-        <textarea id="p-motivo" placeholder="Descrição opcional..."></textarea>
-        
+        <div class="form-group">
+            <label class="form-label">📅 O meu turno</label>
+            <input type="date" id="p-meu-data">
+            <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">🔄 Turno pretendido</label>
+            <input type="date" id="p-pret-data">
+            <input type="text" id="p-pret-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">👤 Colega para trocar</label>
+            <select id="p-colega-select"><option value="">-- Seleciona colega --</option></select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">💬 Motivo (opcional)</label>
+            <textarea id="p-motivo" placeholder="Descrição opcional..."></textarea>
+        </div>
         <button class="btn-main" id="btn-enviar-pedido" style="margin-top:0;">Enviar Pedido</button>
         <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:13px;"></div>
     </div>
@@ -219,7 +233,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js"; // IMPORTANTE PARA NOTIFICAÇÕES
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDnQ5fQFmx1-48lJwcaJhSKq2Y8MAaNAcY",
@@ -233,7 +247,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const messaging = getMessaging(app); // INICIAR MESSAGING
+  const messaging = getMessaging(app);
 
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
   const API_BASE = "https://meuturno-notifications.onrender.com";
@@ -241,7 +255,7 @@
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // --- MOTOR DE NOTIFICAÇÕES (PUSH & RENDER SERVER) ---
+  // --- MOTOR DE NOTIFICAÇÕES ---
   async function pedirNotificacoes() {
     if (!('Notification' in window)) return;
     try {
@@ -250,31 +264,54 @@
         const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
         const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
         if (token) {
-          // Grava o token do utilizador no Firebase para o Render saber para onde enviar
           await setDoc(doc(db, 'Utilizadores', currentUser.uid, 'tokens', token), { token: token, updatedAt: serverTimestamp() }, { merge: true });
-          console.log("Notificações ativadas com sucesso!");
         }
       }
-    } catch(e) { console.error("Erro ao ativar notificações:", e); }
+    } catch(e) { console.error("Erro push:", e); }
   }
 
-  // --- VISUALIZADOR DE DOCUMENTOS ---
+  // --- VISUALIZADOR DE DOCUMENTOS (COM LIMPEZA ABSOLUTA DE LINK) ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
-    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível.</p>"; return; }
     
-    let url = rawUrl.includes('<iframe') ? rawUrl.match(/src="([^"]+)"/)[1] : rawUrl.trim();
-    let embedUrl = url;
-    if (embedUrl.includes("1drv.ms") && embedUrl.includes("/b/") && !embedUrl.includes("action=")) {
-        embedUrl += (embedUrl.includes("?") ? "&" : "?") + "action=embedview";
+    if (!rawUrl) { 
+        wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível.</p>"; 
+        return; 
+    }
+    
+    // LIMPEZA ABSOLUTA DO LINK
+    let url = rawUrl;
+
+    // 1. Se colou como tag <iframe src="...">
+    if (url.includes("src=")) {
+        const match = url.match(/src=["']([^"']+)["']/);
+        if (match) url = match[1];
+    } else {
+        // 2. Se colou o link colado aos atributos (ex: link" width="98")
+        // A tesoura mágica: corta na primeira aspa ou no primeiro espaço!
+        url = url.split('"')[0].split(' ')[0];
     }
 
-    let dlUrl = url.replace("action=embedview", "").replace("&em=2", "").replace("?&", "?").replace("&&", "&");
-    if(dlUrl.endsWith("?")) dlUrl = dlUrl.slice(0, -1);
+    // Remove espaços vazios acidentais no fim
+    url = url.trim();
+
+    // Link para Embed (mostrar na app)
+    let embedUrl = url;
+    if (embedUrl.includes("1drv.ms") && !embedUrl.includes("action=")) {
+        embedUrl = embedUrl.split('?')[0]; // Tira o lixo do URL
+        embedUrl += "?action=embedview";
+    }
+
+    // Link para Download (Limpo)
+    let dlUrl = url.split('?')[0];
 
     const btnDl = document.getElementById(dlId);
-    if (btnDl) btnDl.href = dlUrl; 
+    if (btnDl) { 
+        btnDl.href = dlUrl;
+        btnDl.setAttribute("target", "_blank"); // Garante que abre em nova aba/faz download
+    }
+
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
 
@@ -310,7 +347,6 @@
       carregarAvisos();
       carregarMeusPedidos();
       
-      // PEDIR PERMISSÃO PARA NOTIFICAÇÕES ASSIM QUE FAZ LOGIN
       setTimeout(pedirNotificacoes, 1500); 
 
     } else {
@@ -364,7 +400,6 @@
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
           await updateDoc(doc(db, "Pedidos", id), { status: s });
           
-          // NOTIFICAR O TÉCNICO DA DECISÃO DO ADMIN
           const p = await getDoc(doc(db, "Pedidos", id));
           if(p.exists()) {
              try {
@@ -372,7 +407,7 @@
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: p.data().email, status: s })
                 });
-             } catch(e) { console.log("Erro ao enviar push de status", e); }
+             } catch(e) {}
           }
       }
   };
@@ -445,16 +480,14 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          // Disparar Email
           await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id });
           
-          // Disparar Notificação Push para o Servidor
           try {
             await fetch(`${API_BASE}/pedido`, {
                 method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
             });
-          } catch(e) { console.log("Aviso: Push falhou, mas dados gravados."); }
+          } catch(e) {}
           
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
           
@@ -494,7 +527,6 @@
       if(!txt) return;
       await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
       
-      // Disparar Push Notification (Aviso Geral)
       try {
         await fetch(`${API_BASE}/aviso`, {
             method: "POST", headers: { "Content-Type": "application/json" },
