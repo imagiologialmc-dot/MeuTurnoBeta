@@ -43,7 +43,7 @@
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* VISUALIZADOR DE DOCUMENTOS (COM BOTÃO DE DOWNLOAD) */
+    /* VISUALIZADOR DE DOCUMENTOS */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid #ddd; }
     .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
@@ -58,7 +58,7 @@
     .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
     .form-card textarea { resize: none; min-height: 80px; }
 
-    /* CARDS DE HISTÓRICO / GESTÃO */
+    /* CARDS DE HISTÓRICO / GESTÃO / AVISOS */
     .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; }
     .pedido-header { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
     .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: #333; }
@@ -219,11 +219,22 @@
   </nav>
 </div>
 
+<div id="modal-aviso" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div class="login-box" style="max-width:400px;">
+        <h3 style="color:var(--secondary);">Novo Aviso</h3>
+        <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid #ddd; resize:none;" placeholder="Escreva aqui..."></textarea>
+        <div style="display:flex; gap:10px;">
+            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold; cursor:pointer;">Cancelar</button>
+            <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;">Publicar</button>
+        </div>
+    </div>
+</div>
+
 <div id="modal-vistos" class="modal-overlay hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div class="login-box" style="max-width:400px;">
-        <h3>Confirmaram leitura:</h3>
-        <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:13px; text-align:left;"></div>
-        <button onclick="document.getElementById('modal-vistos').classList.add('hidden')" class="btn-main">Fechar</button>
+        <h3 style="color:var(--secondary);">Confirmaram leitura:</h3>
+        <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:14px; text-align:left;"></div>
+        <button onclick="document.getElementById('modal-vistos').classList.add('hidden')" class="btn-main" style="margin-top:0;">Fechar</button>
     </div>
 </div>
 
@@ -257,7 +268,7 @@
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // --- VISUALIZADOR E DOWNLOADER DE PDF ---
+  // --- VISUALIZADOR DE DOCUMENTOS COM PARSER INTELIGENTE ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
@@ -267,23 +278,23 @@
         return; 
     }
     
+    // 1. Extrair estritamente o URL puro (ignora width="98" e afins que quebravam o botão download)
     let url = rawUrl;
-    if (url.includes('<iframe')) {
-        const match = url.match(/src="([^"]+)"/);
-        if (match) url = match[1];
+    const urlMatch = url.match(/(https?:\/\/[^\s"]+)/);
+    if (urlMatch) {
+        url = urlMatch[1];
     }
-    url = url.trim();
-
-    // Link para Embed (mostrar dentro da app)
+    
+    // 2. Link para Embed (mostrar no Iframe)
     let embedUrl = url;
     if (embedUrl.includes("1drv.ms") && embedUrl.includes("/b/") && !embedUrl.includes("action=")) {
         embedUrl += (embedUrl.includes("?") ? "&" : "?") + "action=embedview";
     }
 
-    // Link para Download / Acesso Nativo no browser (tiramos as tags de iframe forçado do onedrive)
-    let dlUrl = url.replace("action=embedview", "").replace("&em=2", "");
+    // 3. Link limpo para o botão de Download
+    let dlUrl = url.replace("action=embedview", "").replace("&em=2", "").replace("?&", "?").replace("&&", "&");
+    if(dlUrl.endsWith("?")) dlUrl = dlUrl.slice(0, -1);
 
-    // Configura o Botão de Download
     const btnDl = document.getElementById(dlId);
     if (btnDl) { 
         btnDl.href = dlUrl; 
@@ -311,15 +322,12 @@
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) { userRole = p.data().role; carregarColegasRole(); }
 
-      // Atenção ao detalhe: "lista telefonica" tem um espaço na DB
       onSnapshot(doc(db, "Config", "links_v2"), snap => {
         if (snap.exists()) {
           linksDB = snap.data();
           setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_atual);
           setViewer("div-med", "dl-med", linksDB.horario_medicos_atual);
           setViewer("div-oncall", "dl-oncall", linksDB.oncall);
-          
-          // O mistério resolvido:
           setViewer("div-tel", "dl-tel", linksDB["lista telefonica"]); 
         }
       });
@@ -332,7 +340,52 @@
     }
   });
 
-  // --- GESTÃO DE TROCAS (V1 STYLE) ---
+  // --- AVISOS COM ESTILO V1 ---
+  function carregarAvisos() {
+    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
+        const div = document.getElementById("lista-avisos");
+        div.innerHTML = "";
+        snap.forEach(d => {
+            const a = d.data();
+            const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
+            const card = document.createElement("div"); card.className = "card";
+            card.style.borderLeftColor = "var(--primary)";
+            
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between;"><strong>👤 ${a.autor}</strong><span style="font-size:11px; color:#aaa;">${dataAviso}</span></div>
+                <div style="font-size:14px; margin:12px 0; white-space:pre-wrap;">${a.texto}</div>
+                <div style="display:flex; gap:15px; align-items:center; margin-top:10px;">
+                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:12px; padding:6px 12px; border-radius:4px; border:1px solid #2AA8A8; background:#e6f4f4; color:#2AA8A8; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">✅ Confirmar Leitura</button>
+                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:12px; color:#2D6E8E; font-weight:bold; border:none; background:none; cursor:pointer; display:flex; align-items:center; gap:5px;">👁️ Ver confirmações</button>` : ""}
+                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer; font-size:16px;">🗑️</button>` : ""}
+                </div>`;
+            div.appendChild(card);
+        });
+    });
+  }
+
+  document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
+  document.getElementById("btn-publicar").addEventListener("click", async () => {
+      const txt = document.getElementById("aviso-texto").value;
+      if(!txt) return;
+      await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
+      document.getElementById("modal-aviso").classList.add("hidden");
+      document.getElementById("aviso-texto").value = "";
+  });
+
+  window.verQuemViu = async (id) => {
+      const snap = await getDocs(collection(db, "Avisos", id, "acknowledgements"));
+      const lista = document.getElementById("lista-vistos");
+      lista.innerHTML = snap.empty ? "<p style='color:#666;'>Ninguém confirmou ainda.</p>" : "";
+      snap.forEach(d => { lista.innerHTML += `<div style='padding:5px 0; border-bottom:1px solid #eee;'>• ${d.data().nome}</div>`; });
+      document.getElementById("modal-vistos").classList.remove("hidden");
+  };
+
+  window.confirmarLeitura = async (id) => { await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() }); alert("Leitura confirmada com sucesso."); };
+  window.apagarAviso = async (id) => { if(confirm("Tem a certeza que quer apagar este aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
+
+
+  // --- GESTÃO DE TROCAS ---
   function carregarGestao() {
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
@@ -448,44 +501,13 @@
           
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
           
+          // Reset Form
           document.getElementById("p-meu-periodo").value = "";
           document.getElementById("p-pret-periodo").value = "";
           document.getElementById("p-motivo").value = "";
       } catch(e) { msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação com o servidor.</span>"; }
   };
 
-  // --- AVISOS ---
-  function carregarAvisos() {
-    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
-        const div = document.getElementById("lista-avisos");
-        div.innerHTML = "";
-        snap.forEach(d => {
-            const a = d.data();
-            const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
-            const card = document.createElement("div"); card.className = "card";
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between;"><strong>👤 ${a.autor}</strong><span style="font-size:11px; color:#aaa;">${dataAviso}</span></div>
-                <div style="font-size:14px; margin:10px 0; white-space:pre-wrap;">${a.texto}</div>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:10px; padding:6px 12px; border-radius:6px; border:1px solid var(--primary); background:#e6f4f4; color:var(--primary); font-weight:bold; cursor:pointer;">✅ Confirmar Leitura</button>
-                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:10px; color:var(--secondary); font-weight:bold; border:none; background:none; cursor:pointer;">👁️ Ver quem viu</button>` : ""}
-                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer; font-size:14px; color:red;">🗑️</button>` : ""}
-                </div>`;
-            div.appendChild(card);
-        });
-    });
-  }
-
-  window.verQuemViu = async (id) => {
-      const snap = await getDocs(collection(db, "Avisos", id, "acknowledgements"));
-      const lista = document.getElementById("lista-vistos");
-      lista.innerHTML = snap.empty ? "Ninguém confirmou ainda." : "";
-      snap.forEach(d => { lista.innerHTML += `• ${d.data().nome}<br>`; });
-      document.getElementById("modal-vistos").classList.remove("hidden");
-  };
-
-  window.confirmarLeitura = async (id) => { await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() }); alert("Leitura confirmada com sucesso."); };
-  window.apagarAviso = async (id) => { if(confirm("Tem a certeza que quer apagar este aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
 
   // --- NAVEGAÇÃO E BOTÕES UI ---
   document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
