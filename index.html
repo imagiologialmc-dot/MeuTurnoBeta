@@ -7,7 +7,6 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2AA8A8">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     :root { --primary: #2AA8A8; --secondary: #2D6E8E; --bg: #f0f4f7; }
@@ -31,10 +30,9 @@
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #f8f9fa; border-bottom: 1px solid #eee; }
     .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 11px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-action:last-child { border-right: none; }
     iframe { width: 100%; height: calc(100svh - 260px); min-height: 450px; border: none; display: block; background: #fff; }
 
-    /* TABS E NAVEGAÇÃO */
+    /* TABS E NAV */
     .tab-content { padding: 12px; padding-bottom: 90px; }
     .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; }
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; overflow-x: auto; }
@@ -42,9 +40,9 @@
     .nav-btn.active { color: var(--primary); }
     .nav-btn .icon { font-size: 22px; }
 
-    /* CARDS (AVISOS / PEDIDOS) */
+    /* CARDS */
     .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid var(--primary); }
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
     .status-pendente { background: #fff3cd; color: #856404; }
     .status-aprovado { background: #d1e7dd; color: #0f5132; }
     .status-reprovado { background: #f8d7da; color: #842029; }
@@ -55,21 +53,22 @@
 <div id="login-screen">
   <div class="logo">☢</div>
   <h1 style="color:white; font-size:28px;">MeuTurno BETA</h1>
-  <p style="color:rgba(255,255,255,0.8); margin-bottom:30px;">Versão 2.0 - Amb. Testes</p>
   <div class="login-box">
     <input type="text" id="login-email" placeholder="Utilizador ou Email">
     <input type="password" id="login-pass" placeholder="Password">
     <button class="btn-main" id="btn-login">Entrar</button>
     <div id="login-error"></div>
-    <button type="button" id="btn-reset" style="background:none; border:none; color:var(--primary); font-size:12px; margin-top:10px; width:100%;">Esqueceste a password?</button>
   </div>
 </div>
 
 <div id="app-screen" class="hidden">
   <div class="app-header">
-    <div><strong>☢ MeuTurno</strong></div>
+    <div><strong>☢ MeuTurno v2.0</strong></div>
     <div style="display:flex; align-items:center; gap:8px;">
-        <span id="header-nome" style="font-size:10px;"></span>
+        <div style="text-align:right; font-size:9px;">
+            <span id="header-nome"></span><br>
+            <span id="admin-tag" class="hidden" style="color:#FFD700; font-weight:bold;">COORDENAÇÃO</span>
+        </div>
         <button id="btn-logout" class="btn-logout">Sair</button>
     </div>
   </div>
@@ -114,28 +113,15 @@
     </div>
   </div>
 
-  <div id="tab-telefones" class="tab-content hidden">
-    <div class="section-title">📞 Contactos Úteis</div>
-    <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="f-tel" class="btn-action" target="_blank">🔍 Tela Cheia</a></div>
-      <div id="div-tel"></div>
-    </div>
-  </div>
-
   <div id="tab-pedidos" class="tab-content hidden">
     <div class="section-title">🔄 Pedir Troca</div>
     <div class="card" style="border-left-color: var(--secondary);">
         <label style="font-size:11px; font-weight:bold;">O MEU TURNO:</label>
         <input type="date" id="p-data" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
         <input type="text" id="p-turno" placeholder="Ex: Manhã (8h-16h)" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        
         <label style="font-size:11px; font-weight:bold;">COLEGA (Mesmo Cargo):</label>
-        <select id="p-colega" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;"><option>A carregar colegas...</option></select>
-        
-        <label style="font-size:11px; font-weight:bold;">TURNO PRETENDIDO:</label>
-        <input type="date" id="p-data-pret" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        
-        <button class="btn-main" id="btn-enviar-pedido">Enviar Pedido de Troca</button>
+        <select id="p-colega" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;"><option>A carregar...</option></select>
+        <button class="btn-main" id="btn-enviar-pedido">Enviar Pedido</button>
         <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:12px;"></div>
     </div>
     <div class="section-title">📋 Meus Pedidos</div>
@@ -152,20 +138,27 @@
     <button class="nav-btn" data-tab="tecnicos"><span class="icon">📅</span>Técnicos</button>
     <button class="nav-btn" data-tab="medicos"><span class="icon">🩺</span>Médicos</button>
     <button class="nav-btn" data-tab="oncall"><span class="icon">🚨</span>Oncall</button>
-    <button class="nav-btn" data-tab="telefones"><span class="icon">📞</span>Lista</button>
     <button class="nav-btn" data-tab="pedidos"><span class="icon">🔄</span>Trocas</button>
-    <button class="nav-btn hidden" id="nav-gestao" data-tab="gestao"><span class="icon">⚙️</span>Gestão</button>
+    <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="icon">⚙️</span>Gestão</button>
   </nav>
 </div>
 
 <div id="modal-aviso" class="modal-overlay hidden">
   <div class="login-box" style="max-width:400px;">
-    <h3>Novo Aviso</h3>
+    <h3 id="modal-titulo">Novo Aviso</h3>
     <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid #ddd; resize:none;"></textarea>
     <div style="display:flex; gap:10px;">
-        <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee;">Cancelar</button>
+        <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee;">Sair</button>
         <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;">Publicar</button>
     </div>
+  </div>
+</div>
+
+<div id="modal-vistos" class="modal-overlay hidden">
+  <div class="login-box">
+    <h3>Confirmaram leitura:</h3>
+    <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:13px;"></div>
+    <button onclick="document.getElementById('modal-vistos').classList.add('hidden')" class="btn-main">Fechar</button>
   </div>
 </div>
 
@@ -180,9 +173,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDnQ5fQFmx1-48lJwcaJhSKq2Y8MAaNAcY",
@@ -196,59 +188,51 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const messaging = getMessaging(app);
+
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
   const API_BASE = "https://meuturno-notifications.onrender.com";
 
-  let currentUser = null, userRole = null, linksDB = {};
+  let currentUser = null, userRole = null, isAdmin = false, linksDB = {};
 
-  // --- FUNÇÃO DE VISUALIZAÇÃO DE PDFs ---
+  // VISUALIZADOR PDF
   function setViewer(divId, fId, pId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!rawUrl || !wrapper) return;
-    
-    // Limpa link (remove tags iframe se houver)
     let url = rawUrl.includes('<iframe') ? rawUrl.match(/src="([^"]+)"/)[1] : rawUrl.trim();
+    if (url.includes("/b/c/")) url += (url.includes("?") ? "&" : "?") + "action=embedview";
     
-    // Configura para Visualização OneDrive
-    if (url.includes("1drv.ms")) {
-        if (!url.includes("action=")) url += (url.includes("?") ? "&" : "?") + "action=embedview";
-    }
-
     if (fId) document.getElementById(fId).href = url.replace("action=embedview", "");
     if (pId) document.getElementById(pId).href = url.replace("action=embedview", "");
     wrapper.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
   }
 
-  // --- LÓGICA DE INICIALIZAÇÃO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
+      isAdmin = ADMINS.includes(user.email);
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("app-screen").classList.remove("hidden");
       document.getElementById("header-nome").textContent = user.email.split("@")[0];
 
-      // Verificar Role e Admin
+      if (isAdmin) {
+          document.getElementById("admin-tag").classList.remove("hidden");
+          document.getElementById("nav-gestao").classList.remove("hidden");
+          document.getElementById("btn-novo-aviso").classList.remove("hidden");
+          carregarGestao();
+      }
+
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) {
           userRole = p.data().role;
           carregarColegasRole();
       }
 
-      if (ADMINS.includes(user.email)) {
-          document.getElementById("nav-gestao").classList.remove("hidden");
-          document.getElementById("btn-novo-aviso").classList.remove("hidden");
-          carregarGestao();
-      }
-
-      // LEMOS DO links_v2 PARA O BETA
       onSnapshot(doc(db, "Config", "links_v2"), snap => {
         if (snap.exists()) {
           linksDB = snap.data();
           setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
           setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual);
           setViewer("div-oncall", "f-oncall", null, linksDB.oncall);
-          setViewer("div-tel", "f-tel", null, linksDB.telefones);
         }
       });
 
@@ -260,79 +244,92 @@
     }
   });
 
-  // --- NOTIFICAÇÕES (RENDER) ---
-  async function notificar(endpoint, payload) {
-    try { await fetch(`${API_BASE}/${endpoint}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }); } catch (e) {}
+  // AVISOS E QUEM VIU
+  function carregarAvisos() {
+    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
+        const div = document.getElementById("lista-avisos");
+        div.innerHTML = "";
+        snap.forEach(d => {
+            const a = d.data();
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<strong>👤 ${a.autor}</strong><p style="margin:8px 0; font-size:14px;">${a.texto}</p>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:11px; padding:5px; border-radius:5px; border:1px solid var(--primary); cursor:pointer;">✅ Confirmar Leitura</button>
+                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:11px; color:var(--secondary); background:none; border:none; cursor:pointer;">👁️ Ver quem viu</button>` : ""}
+                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>` : ""}
+                </div>`;
+            div.appendChild(card);
+        });
+    });
   }
 
-  // --- CARREGAR COLEGAS (MESMO ROLE) ---
+  window.verQuemViu = async (id) => {
+      const snap = await getDocs(collection(db, "Avisos", id, "acknowledgements"));
+      const lista = document.getElementById("lista-vistos");
+      lista.innerHTML = snap.empty ? "Ninguém confirmou ainda." : "";
+      snap.forEach(d => { lista.innerHTML += `• ${d.data().nome}<br>`; });
+      document.getElementById("modal-vistos").classList.remove("hidden");
+  };
+
+  window.confirmarLeitura = async (id) => {
+      await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() });
+      alert("Leitura confirmada!");
+  };
+
+  window.apagarAviso = async (id) => { if(confirm("Apagar aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
+
+  document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
+  document.getElementById("btn-publicar").addEventListener("click", async () => {
+      const txt = document.getElementById("aviso-texto").value;
+      if(!txt) return;
+      await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
+      document.getElementById("modal-aviso").classList.add("hidden");
+      document.getElementById("aviso-texto").value = "";
+  });
+
+  // TROCAS E GESTÃO
   async function carregarColegasRole() {
       const q = query(collection(db, "Utilizadores"), where("role", "==", userRole));
       const snap = await getDocs(q);
       const sel = document.getElementById("p-colega");
       sel.innerHTML = '<option value="">Selecionar Colega</option>';
       snap.forEach(d => {
-          if (d.data().email !== currentUser.email) {
-              sel.innerHTML += `<option value="${d.data().email}" data-nome="${d.data().nome}">${d.data().nome || d.data().email}</option>`;
-          }
+          if (d.data().email !== currentUser.email) sel.innerHTML += `<option value="${d.data().email}" data-nome="${d.data().nome}">${d.data().nome}</option>`;
       });
   }
 
-  // --- AVISOS ---
-  function carregarAvisos() {
-    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
-        const div = document.getElementById("lista-avisos");
-        div.innerHTML = snap.empty ? '<div class="empty-msg">Sem avisos.</div>' : "";
+  document.getElementById("btn-enviar-pedido").addEventListener("click", async () => {
+      const meuTurno = document.getElementById("p-data").value + " ("+document.getElementById("p-turno").value+")";
+      const colega = document.getElementById("p-colega");
+      if(!colega.value || !document.getElementById("p-data").value) return;
+      try {
+          const docRef = await addDoc(collection(db, "Pedidos"), {
+              email: currentUser.email, nome: currentUser.email.split("@")[0],
+              meuTurno, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome,
+              status: "pendente", createdAt: serverTimestamp(), role: userRole
+          });
+          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurno, pedido_id: docRef.id });
+          document.getElementById("pedido-msg").innerHTML = "✅ Enviado!";
+      } catch(e) { document.getElementById("pedido-msg").innerHTML = "❌ Erro."; }
+  });
+
+  function carregarGestao() {
+    onSnapshot(query(collection(db, "Pedidos"), where("status", "==", "pendente")), snap => {
+        const div = document.getElementById("lista-gestao");
+        div.innerHTML = snap.empty ? "Sem pendentes." : "";
         snap.forEach(d => {
-            const a = d.data();
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `<strong>👤 ${a.autor}</strong><p style="margin:8px 0; font-size:14px;">${a.texto}</p>
-                             <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:11px; padding:5px; border-radius:5px; border:1px solid var(--primary); cursor:pointer;">✅ Confirmar Leitura</button>
-                             ${ADMINS.includes(currentUser.email) ? `<button onclick="window.apagarAviso('${d.id}')" style="margin-left:10px; border:none; background:none; cursor:pointer;">🗑️</button>` : ""}`;
+            const p = d.data();
+            const card = document.createElement("div"); card.className = "card";
+            card.innerHTML = `<strong>${p.nome}</strong> (${p.role})<br>Troca: ${p.meuTurno}<br>
+                <button onclick="window.decidir('${d.id}', 'aprovado')" style="color:green; font-weight:bold; margin-top:10px; border:none; background:none; cursor:pointer;">APROVAR</button> | 
+                <button onclick="window.decidir('${d.id}', 'reprovado')" style="color:red; font-weight:bold; margin-top:10px; border:none; background:none; cursor:pointer;">REPROVAR</button>`;
             div.appendChild(card);
         });
     });
   }
 
-  window.apagarAviso = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "Avisos", id)); };
-  window.confirmarLeitura = async (id) => { 
-      await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() });
-      alert("Confirmado!");
-  };
-
-  document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
-  document.getElementById("btn-publicar").addEventListener("click", async () => {
-      const texto = document.getElementById("aviso-texto").value;
-      if(!texto) return;
-      await addDoc(collection(db, "Avisos"), { texto, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
-      await notificar("aviso", { titulo: "Novo Aviso", texto });
-      document.getElementById("modal-aviso").classList.add("hidden");
-      document.getElementById("aviso-texto").value = "";
-  });
-
-  // --- PEDIDOS DE TROCA ---
-  document.getElementById("btn-enviar-pedido").addEventListener("click", async () => {
-      const msg = document.getElementById("pedido-msg");
-      const colegaSel = document.getElementById("p-colega");
-      const meuTurno = document.getElementById("p-data").value + " (" + document.getElementById("p-turno").value + ")";
-      
-      if(!colegaSel.value || !document.getElementById("p-data").value) { msg.innerHTML = "Preencha tudo."; return; }
-      msg.innerHTML = "⏳ A enviar...";
-
-      try {
-          const docRef = await addDoc(collection(db, "Pedidos"), {
-              email: currentUser.email, nome: currentUser.email.split("@")[0],
-              meuTurno, colega_email: colegaSel.value, colega_nome: colegaSel.options[colegaSel.selectedIndex].dataset.nome,
-              status: "pendente", createdAt: serverTimestamp(), role: userRole
-          });
-
-          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurno, pedido_id: docRef.id });
-          await notificar("pedido", { nome: currentUser.email.split("@")[0], colega_email: colegaSel.value });
-
-          msg.innerHTML = "<span style='color:green'>✅ Enviado!</span>";
-      } catch(e) { msg.innerHTML = "❌ Erro."; }
-  });
+  window.decidir = async (id, s) => { await updateDoc(doc(db, "Pedidos", id), { status: s }); };
 
   function carregarMeusPedidos() {
     onSnapshot(query(collection(db, "Pedidos"), where("email", "==", currentUser.email)), snap => {
@@ -345,41 +342,13 @@
     });
   }
 
-  function carregarGestao() {
-    onSnapshot(query(collection(db, "Pedidos"), where("status", "==", "pendente")), snap => {
-        const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? "Sem pendentes." : "";
-        snap.forEach(d => {
-            const p = d.data();
-            const card = document.createElement("div"); card.className = "card";
-            card.innerHTML = `<strong>${p.nome}</strong> (${p.role}) quer trocar ${p.meuTurno}<br>
-                             <button onclick="window.decidir('${d.id}', 'aprovado')" style="color:green; font-weight:bold; margin-top:10px; background:none; border:none; cursor:pointer;">APROVAR</button> | 
-                             <button onclick="window.decidir('${d.id}', 'reprovado')" style="color:red; font-weight:bold; background:none; border:none; cursor:pointer;">REPROVAR</button>`;
-            div.appendChild(card);
-        });
-    });
-  }
-
-  window.decidir = async (id, s) => { 
-      await updateDoc(doc(db, "Pedidos", id), { status: s });
-      const p = await getDoc(doc(db, "Pedidos", id));
-      await notificar("status", { email: p.data().email, status: s });
-  };
-
-  // --- LOGIN E NAVEGAÇÃO ---
+  // NAV E LOGIN
   document.getElementById("btn-login").addEventListener("click", async () => {
-    const u = document.getElementById("login-email").value.trim();
-    const p = document.getElementById("login-pass").value;
-    const email = u.includes("@") ? u : u + "@imagiologia.local";
-    try { await signInWithEmailAndPassword(auth, email, p); } catch(e) { document.getElementById("login-error").textContent = "Erro no acesso."; }
+    const email = document.getElementById("login-email").value.trim() + (document.getElementById("login-email").value.includes("@") ? "" : "@imagiologia.local");
+    await signInWithEmailAndPassword(auth, email, document.getElementById("login-pass").value).catch(() => alert("Erro!"));
   });
 
   document.getElementById("btn-logout").addEventListener("click", () => signOut(auth));
-  document.getElementById("btn-reset").addEventListener("click", async () => {
-      const email = document.getElementById("login-email").value.trim();
-      if(email) await sendPasswordResetEmail(auth, email.includes("@") ? email : email + "@imagiologia.local");
-      alert("Email de recuperação enviado.");
-  });
 
   document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-content").forEach(t => t.classList.add("hidden"));
@@ -389,13 +358,9 @@
   }));
 
   document.getElementById("tec-atual-btn").addEventListener("click", () => {
-      document.getElementById("tec-atual-btn").style.background = "var(--primary)"; document.getElementById("tec-atual-btn").style.color = "white";
-      document.getElementById("tec-prox-btn").style.background = "white"; document.getElementById("tec-prox-btn").style.color = "var(--primary)";
       setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
   });
   document.getElementById("tec-prox-btn").addEventListener("click", () => {
-      document.getElementById("tec-prox-btn").style.background = "var(--primary)"; document.getElementById("tec-prox-btn").style.color = "white";
-      document.getElementById("tec-atual-btn").style.background = "white"; document.getElementById("tec-atual-btn").style.color = "var(--primary)";
       setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_proximo);
   });
 
