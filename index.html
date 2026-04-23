@@ -52,7 +52,6 @@
 
     /* FORMULÁRIO DE TROCAS */
     .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); }
-    .form-card h3 { color: var(--secondary); font-size: 16px; margin-bottom: 15px; }
     .form-group { margin-bottom: 15px; }
     .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; display: block; }
     .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
@@ -119,7 +118,7 @@
         <button id="btn-tec-prox" class="btn-toggle inactive">Próximo Mês</button>
     </div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="dl-tec" class="btn-action" target="_blank">📥 Fazer Download</a></div>
+      <div class="viewer-actions"><a href="#" id="dl-tec" class="btn-action" target="_blank">📥 Fazer Download Direto</a></div>
       <div id="div-tec"></div>
     </div>
   </div>
@@ -131,7 +130,7 @@
         <button id="btn-med-prox" class="btn-toggle inactive">Próximo Mês</button>
     </div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="dl-med" class="btn-action" target="_blank">📥 Fazer Download</a></div>
+      <div class="viewer-actions"><a href="#" id="dl-med" class="btn-action" target="_blank">📥 Fazer Download Direto</a></div>
       <div id="div-med"></div>
     </div>
   </div>
@@ -139,7 +138,7 @@
   <div id="tab-oncall" class="tab-content hidden">
     <div class="section-title">🚨 Oncall Anestesia</div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="dl-oncall" class="btn-action" target="_blank">📥 Fazer Download</a></div>
+      <div class="viewer-actions"><a href="#" id="dl-oncall" class="btn-action" target="_blank">📥 Fazer Download Direto</a></div>
       <div id="div-oncall"></div>
     </div>
   </div>
@@ -147,7 +146,7 @@
   <div id="tab-telefones" class="tab-content hidden">
     <div class="section-title">📞 Contactos Úteis</div>
     <div class="viewer-card">
-      <div class="viewer-actions"><a href="#" id="dl-tel" class="btn-action" target="_blank">📥 Fazer Download</a></div>
+      <div class="viewer-actions"><a href="#" id="dl-tel" class="btn-action" target="_blank">📥 Fazer Download Direto</a></div>
       <div id="div-tel"></div>
     </div>
   </div>
@@ -270,7 +269,7 @@
     } catch(e) { console.error("Erro push:", e); }
   }
 
-  // --- VISUALIZADOR DE DOCUMENTOS (COM LIMPEZA ABSOLUTA DE LINK) ---
+  // --- VISUALIZADOR DE DOCUMENTOS COM DOWNLOAD FORÇADO ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
@@ -280,36 +279,25 @@
         return; 
     }
     
-    // LIMPEZA ABSOLUTA DO LINK
     let url = rawUrl;
-
-    // 1. Se colou como tag <iframe src="...">
     if (url.includes("src=")) {
         const match = url.match(/src=["']([^"']+)["']/);
         if (match) url = match[1];
     } else {
-        // 2. Se colou o link colado aos atributos (ex: link" width="98")
-        // A tesoura mágica: corta na primeira aspa ou no primeiro espaço!
         url = url.split('"')[0].split(' ')[0];
     }
-
-    // Remove espaços vazios acidentais no fim
     url = url.trim();
 
     // Link para Embed (mostrar na app)
-    let embedUrl = url;
-    if (embedUrl.includes("1drv.ms") && !embedUrl.includes("action=")) {
-        embedUrl = embedUrl.split('?')[0]; // Tira o lixo do URL
-        embedUrl += "?action=embedview";
-    }
+    let embedUrl = url.split('?')[0] + "?action=embedview";
 
-    // Link para Download (Limpo)
-    let dlUrl = url.split('?')[0];
+    // Link para Forçar o Download no OneDrive (adicionamos ?download=1)
+    let dlUrl = url.split('?')[0] + "?download=1";
 
     const btnDl = document.getElementById(dlId);
     if (btnDl) { 
         btnDl.href = dlUrl;
-        btnDl.setAttribute("target", "_blank"); // Garante que abre em nova aba/faz download
+        btnDl.setAttribute("target", "_blank"); 
     }
 
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
