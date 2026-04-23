@@ -9,3 +9,13 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  console.log('[firebase-messaging-sw.js] Recebeu mensagem em background ', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/meuturno/icon-192.png'
+  };
+  return self.registration.showNotification(notificationTitle, notificationOptions);
+});
