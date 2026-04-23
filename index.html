@@ -4,80 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>MeuTurno BETA v2.0</title>
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2AA8A8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     :root { --primary: #2AA8A8; --secondary: #2D6E8E; --bg: #f0f4f7; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: #333; overflow-x: hidden; }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: #333; }
     .hidden { display: none !important; }
     
     /* LOGIN */
-    #login-screen, #change-pass-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
-    .logo { font-size: 64px; color: #FFD700; margin-bottom: 10px; }
-    .login-box { background: white; border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
-    .login-box input { width: 100%; padding: 13px; margin: 7px 0; border-radius: 10px; border: 1.5px solid #ddd; outline: none; }
-    .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); }
+    .login-box { background: white; border-radius: 16px; padding: 25px; width: 100%; max-width: 350px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+    .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1.5px solid #ddd; outline: none; }
+    .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
-    /* INTERFACE */
-    .app-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    /* HEADER */
+    .app-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .btn-logout { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 12px; border-radius: 15px; font-size: 11px; }
+
+    /* CONTEÚDO TABS */
     .tab-content { padding: 12px; padding-bottom: 90px; }
-    .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; }
+    .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0 10px 0; display: flex; align-items: center; gap: 8px; }
 
+    /* CARDS */
+    .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid var(--primary); }
+    .aviso-texto { font-size: 14px; line-height: 1.5; white-space: pre-wrap; margin: 8px 0; }
+    
     /* VISUALIZADOR PDF */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #f8f9fa; border-bottom: 1px solid #eee; }
-    .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 11px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    iframe { width: 100%; height: calc(100svh - 260px); min-height: 450px; border: none; display: block; background: #fff; }
+    .btn-action { flex: 1; padding: 10px; text-align: center; text-decoration: none; color: var(--secondary); font-size: 10px; font-weight: 700; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    iframe { width: 100%; height: calc(100svh - 260px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    /* NAV FUNDO */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; overflow-x: auto; }
-    .nav-btn { flex: 1; min-width: 60px; padding: 8px 2px 6px; border: none; background: none; color: #999; font-size: 9px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .nav-btn.active { color: var(--primary); }
-    .nav-btn .icon { font-size: 22px; }
+    /* FORMULÁRIO TROCAS */
+    .form-label { font-size: 12px; font-weight: 700; color: var(--secondary); margin-top: 10px; display: block; }
+    input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; }
 
-    /* FORMULÁRIO DE TROCAS (ESTILO v1) */
-    .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
-    .form-card h3 { color: var(--secondary); font-size: 16px; margin-bottom: 15px; }
-    .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-top: 12px; display: block; }
-    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px; border: 1.5px solid #ddd; outline: none; font-size: 14px; background: #fff; }
-    .form-card textarea { resize: none; min-height: 80px; }
-    
-    /* HISTÓRICO */
-    .pedido-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 5px solid var(--primary); }
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 8px; }
-    .status-pendente { background: #fff3cd; color: #856404; }
-    .status-aprovado { background: #d1e7dd; color: #0f5132; }
-    .status-reprovado { background: #f8d7da; color: #842029; }
+    /* NAVEGAÇÃOScrollable */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .nav-btn { flex: 1; min-width: 65px; padding: 8px 2px; border: none; background: none; color: #999; font-size: 9px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .nav-btn.active { color: var(--primary); font-weight: 700; }
+    .nav-btn .icon { font-size: 20px; }
   </style>
 </head>
 <body>
 
 <div id="login-screen">
-  <div class="logo">☢</div>
-  <h1>MeuTurno v2.0</h1>
+  <div style="font-size: 60px; margin-bottom:10px;">☢️</div>
+  <h1 style="color:white; font-size:24px;">MeuTurno v2.0 BETA</h1>
   <div class="login-box">
-    <input type="text" id="login-email" placeholder="Email ou Utilizador">
+    <input type="text" id="login-email" placeholder="Utilizador ou Email">
     <input type="password" id="login-pass" placeholder="Password">
-    <button class="btn-main" id="btn-login">Entrar</button>
-    <div id="login-error"></div>
+    <button class="btn-main" id="btn-login">ENTRAR</button>
+    <div id="login-error" style="color:red; font-size:11px; margin-top:10px; text-align:center;"></div>
   </div>
 </div>
 
 <div id="app-screen" class="hidden">
   <div class="app-header">
-    <div><strong>☢ MeuTurno</strong></div>
+    <div><strong>☢️ MeuTurno</strong></div>
     <div style="display:flex; align-items:center; gap:8px;">
         <div style="text-align:right; font-size:9px;"><span id="header-nome"></span><br><span id="admin-tag" class="hidden" style="color:#FFD700; font-weight:bold;">COORDENAÇÃO</span></div>
-        <button id="btn-logout" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 12px; border-radius:15px; font-size:11px;">Sair</button>
+        <button id="btn-logout" class="btn-logout">Sair</button>
     </div>
   </div>
 
-  <div id="tab-tecnicos" class="tab-content">
-    <div class="section-title">📅 Horário</div>
+  <div id="tab-avisos" class="tab-content">
+    <div class="section-title">📢 Quadro de Avisos</div>
+    <button id="btn-novo-aviso" class="btn-main hidden" style="margin-bottom:15px; padding:10px;">+ Novo Aviso</button>
+    <div id="lista-avisos"></div>
+  </div>
+
+  <div id="tab-tecnicos" class="tab-content hidden">
+    <div class="section-title">📅 Horário Técnicos</div>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button id="btn-tec-atual" class="btn-main" style="flex:1; font-size:11px;">Mês Atual</button>
+        <button id="btn-tec-prox" class="btn-main" style="flex:1; font-size:11px; background:white; color:var(--primary); border:1px solid var(--primary);">Próximo Mês</button>
+    </div>
     <div class="viewer-card">
       <div class="viewer-actions">
         <a href="#" id="f-tec" class="btn-action" target="_blank">🔍 Tela Cheia</a>
@@ -87,41 +92,67 @@
     </div>
   </div>
 
-  <div id="tab-pedidos" class="tab-content hidden">
-    <div class="section-title">🔄 Pedido de Troca</div>
-    
-    <div class="form-card">
-      <h3>Nova Solicitação</h3>
-      
-      <label class="form-label">📅 O meu turno</label>
-      <input type="date" id="p-meu-data">
-      <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
-
-      <label class="form-label">🔄 Turno pretendido</label>
-      <input type="date" id="p-pret-data">
-      <input type="text" id="p-pret-periodo" placeholder="Ex: Manhã, Tarde, 8h-16h...">
-
-      <label class="form-label">👤 Colega para trocar</label>
-      <select id="p-colega-select"><option value="">-- Seleciona colega --</option></select>
-
-      <label class="form-label">💬 Motivo</label>
-      <textarea id="p-motivo" placeholder="Descrição opcional..."></textarea>
-
-      <button class="btn-main" id="btn-enviar-pedido" style="margin-top:10px;">Enviar Pedido</button>
-      <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:13px;"></div>
+  <div id="tab-medicos" class="tab-content hidden">
+    <div class="section-title">🩺 Horário Médicos</div>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button id="btn-med-atual" class="btn-main" style="flex:1; font-size:11px;">Mês Atual</button>
+        <button id="btn-med-prox" class="btn-main" style="flex:1; font-size:11px; background:white; color:var(--primary); border:1px solid var(--primary);">Próximo Mês</button>
     </div>
+    <div class="viewer-card">
+      <div class="viewer-actions">
+        <a href="#" id="f-med" class="btn-action" target="_blank">🔍 Tela Cheia</a>
+        <a href="#" id="p-med" class="btn-action" target="_blank">🖨️ Imprimir</a>
+      </div>
+      <div id="div-med"></div>
+    </div>
+  </div>
 
-    <div class="section-title">📋 Meus Pedidos</div>
-    <div id="lista-pedidos"></div>
+  <div id="tab-oncall" class="tab-content hidden">
+    <div class="section-title">🚨 Oncall Anestesia</div>
+    <div class="viewer-card">
+      <div class="viewer-actions"><a href="#" id="f-oncall" class="btn-action" target="_blank">🔍 Tela Cheia</a></div>
+      <div id="div-oncall"></div>
+    </div>
+  </div>
+
+  <div id="tab-telefones" class="tab-content hidden">
+    <div class="section-title">📞 Lista Telefónica</div>
+    <div class="viewer-card">
+      <div class="viewer-actions"><a href="#" id="f-tel" class="btn-action" target="_blank">🔍 Tela Cheia</a></div>
+      <div id="div-telefones"></div>
+    </div>
+  </div>
+
+  <div id="tab-pedidos" class="tab-content hidden">
+    <div class="section-title">🔄 Pedir Troca</div>
+    <div class="card" style="border-left-color: var(--secondary);">
+        <label class="form-label">📅 O MEU TURNO:</label>
+        <input type="date" id="p-meu-data">
+        <input type="text" id="p-meu-periodo" placeholder="Ex: Manhã (8h-16h)">
+        <label class="form-label">🔄 TURNO PRETENDIDO:</label>
+        <input type="date" id="p-pret-data">
+        <input type="text" id="p-pret-periodo" placeholder="Ex: Tarde (16h-00h)">
+        <label class="form-label">👤 COLEGA (Mesmo Cargo):</label>
+        <select id="p-colega-select"><option>A carregar colegas...</option></select>
+        <label class="form-label">💬 MOTIVO:</label>
+        <textarea id="p-motivo" placeholder="Opcional..."></textarea>
+        <button class="btn-main" id="btn-enviar-pedido">Enviar Pedido</button>
+        <div id="pedido-msg" style="text-align:center; margin-top:10px; font-size:12px;"></div>
+    </div>
+    <div id="meus-pedidos"></div>
   </div>
 
   <div id="tab-gestao" class="tab-content hidden">
-    <div class="section-title">⚙️ Gestão de Trocas</div>
+    <div class="section-title">⚙️ Gestão de Pedidos</div>
     <div id="lista-gestao"></div>
   </div>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-tab="tecnicos"><span class="icon">📅</span>Horário</button>
+    <button class="nav-btn active" data-tab="avisos"><span class="icon">📢</span>Avisos</button>
+    <button class="nav-btn" data-tab="tecnicos"><span class="icon">📅</span>Técnicos</button>
+    <button class="nav-btn" data-tab="medicos"><span class="icon">🩺</span>Médicos</button>
+    <button class="nav-btn" data-tab="oncall"><span class="icon">🚨</span>Oncall</button>
+    <button class="nav-btn" data-tab="telefones"><span class="icon">📞</span>Lista</button>
     <button class="nav-btn" data-tab="pedidos"><span class="icon">🔄</span>Trocas</button>
     <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="icon">⚙️</span>Gestão</button>
   </nav>
@@ -130,7 +161,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDnQ5fQFmx1-48lJwcaJhSKq2Y8MAaNAcY",
@@ -146,14 +177,19 @@
   const db = getFirestore(app);
 
   const ADMINS = ["carlos.martins@alivasaude.com", "ana.baiao@alivasaude.com"];
-  let currentUser = null, userRole = null, isAdmin = false;
+  let currentUser = null, userRole = null, isAdmin = false, linksDB = {};
 
-  // FORMATAÇÃO DE DATA (ex: 20/04, MT)
-  const formatarParaDB = (data, periodo) => {
-    if(!data) return periodo;
-    const d = new Date(data + "T00:00:00");
-    return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
-  };
+  // VISUALIZADOR PDF
+  function setViewer(divId, fId, pId, rawUrl) {
+    const wrapper = document.getElementById(divId);
+    if (!rawUrl || !wrapper) return;
+    let url = rawUrl.includes('<iframe') ? rawUrl.match(/src="([^"]+)"/)[1] : rawUrl.trim();
+    if (url.includes("1drv.ms") && !url.includes("action=")) url += (url.includes("?") ? "&" : "?") + "action=embedview";
+    
+    if (fId) document.getElementById(fId).href = url.replace("action=embedview", "");
+    if (pId) document.getElementById(pId).href = url.replace("action=embedview", "");
+    wrapper.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+  }
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -163,23 +199,28 @@
       document.getElementById("app-screen").classList.remove("hidden");
       document.getElementById("header-nome").textContent = user.email.split("@")[0];
 
-      const p = await getDoc(doc(db, "Utilizadores", user.uid));
-      if (p.exists()) {
-          userRole = p.data().role;
-          carregarColegasMesmoRole();
-      }
-
       if (isAdmin) {
           document.getElementById("admin-tag").classList.remove("hidden");
+          document.getElementById("btn-novo-aviso").classList.remove("hidden");
           document.getElementById("nav-gestao").classList.remove("hidden");
           carregarGestao();
       }
 
-      // Carregar Horário (Documento links_v2 para BETA)
+      const p = await getDoc(doc(db, "Utilizadores", user.uid));
+      if (p.exists()) { userRole = p.data().role; carregarColegasRole(); }
+
+      // LINKS DA links_v2
       onSnapshot(doc(db, "Config", "links_v2"), snap => {
-        if (snap.exists()) setViewer("div-tec", "f-tec", "p-tec", snap.data().horario_tecnicos_atual);
+        if (snap.exists()) {
+          linksDB = snap.data();
+          setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
+          setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual);
+          setViewer("div-oncall", "f-oncall", null, linksDB.oncall);
+          setViewer("div-telefones", "f-tel", null, linksDB.telefones);
+        }
       });
 
+      carregarAvisos();
       carregarMeusPedidos();
     } else {
       document.getElementById("app-screen").classList.add("hidden");
@@ -187,132 +228,100 @@
     }
   });
 
-  // --- GRAVAR NO FIREBASE ---
-  document.getElementById("btn-enviar-pedido").addEventListener("click", async () => {
-    const msg = document.getElementById("pedido-msg");
-    const colegaSel = document.getElementById("p-colega-select");
-    const meuData = document.getElementById("p-meu-data").value;
-    const meuPeriodo = document.getElementById("p-meu-periodo").value;
-    const pretData = document.getElementById("p-pret-data").value;
-    const pretPeriodo = document.getElementById("p-pret-periodo").value;
-    const motivo = document.getElementById("p-motivo").value;
-
-    if(!colegaSel.value || !meuData || !pretData) {
-        msg.innerHTML = "<span style='color:red;'>Preenche as datas e o colega.</span>";
-        return;
-    }
-
-    msg.innerHTML = "⏳ A processar...";
-
-    try {
-        const meuTurnoFinal = formatarParaDB(meuData, meuPeriodo);
-        const turnoPretendidoFinal = formatarParaDB(pretData, pretPeriodo);
-
-        await addDoc(collection(db, "Pedidos"), {
-            uid: currentUser.uid,
-            nome: currentUser.email.split("@")[0],
-            email: currentUser.email,
-            colega_email: colegaSel.value,
-            colega_nome: colegaSel.options[colegaSel.selectedIndex].dataset.nome,
-            meuTurno: meuTurnoFinal,
-            turnoPretendido: turnoPretendidoFinal,
-            descricao: motivo,
-            status: "pendente",
-            role: userRole,
-            createdAt: serverTimestamp()
-        });
-
-        msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado com sucesso!</span>";
-        // Limpar campos
-        document.getElementById("p-meu-periodo").value = "";
-        document.getElementById("p-pret-periodo").value = "";
-        document.getElementById("p-motivo").value = "";
-    } catch(e) { msg.innerHTML = "<span style='color:red;'>Erro ao gravar no Firebase.</span>"; }
-  });
-
-  // --- LER DO FIREBASE (HISTÓRICO) ---
-  function carregarMeusPedidos() {
-    const q = query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc"));
-    onSnapshot(q, snap => {
-        const div = document.getElementById("lista-pedidos");
-        div.innerHTML = snap.empty ? "<p style='font-size:12px; color:#aaa;'>Sem pedidos ainda.</p>" : "";
+  // LOGICA AVISOS
+  function carregarAvisos() {
+    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
+        const div = document.getElementById("lista-avisos");
+        div.innerHTML = "";
         snap.forEach(d => {
-            const p = d.data();
-            div.innerHTML += `
-                <div class="pedido-card">
-                    <strong>🔄 ${p.meuTurno} ➡️ ${p.turnoPretendido}</strong>
-                    <div style="font-size:12px; color:#666; margin-top:5px;">Colega: ${p.colega_nome}</div>
-                    <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
-                </div>`;
+            const a = d.data();
+            const card = document.createElement("div"); card.className = "card";
+            card.innerHTML = `<strong>👤 ${a.autor}</strong><div class="aviso-texto">${a.texto}</div>
+                <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:10px; padding:4px 8px; border-radius:5px; border:1px solid var(--primary); cursor:pointer;">✅ Confirmar Leitura</button>
+                ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="margin-left:10px; border:none; background:none; cursor:pointer;">🗑️</button>` : ""}`;
+            div.appendChild(card);
         });
     });
   }
 
-  // --- LER DO FIREBASE (GESTÃO ADMIN) ---
-  function carregarGestao() {
-    const q = query(collection(db, "Pedidos"), where("status", "==", "pendente"), orderBy("createdAt", "desc"));
-    onSnapshot(q, snap => {
-        const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? "<p style='padding:20px; color:#aaa;'>Não há pedidos pendentes.</p>" : "";
-        snap.forEach(d => {
-            const p = d.data();
-            div.innerHTML += `
-                <div class="pedido-card">
-                    <strong>${p.nome} (${p.role})</strong> quer trocar:
-                    <div style="margin:8px 0; font-size:13px;">${p.meuTurno} por ${p.turnoPretendido} de ${p.colega_nome}</div>
-                    <div style="font-style:italic; font-size:11px; color:#777;">"${p.descricao || 'Sem observações'}"</div>
-                    <div style="display:flex; gap:10px; margin-top:12px;">
-                        <button onclick="window.decidirTroca('${d.id}', 'aprovado')" style="flex:1; padding:8px; border:none; background:#d1e7dd; color:#0f5132; border-radius:5px; font-weight:bold; cursor:pointer;">APROVAR</button>
-                        <button onclick="window.decidirTroca('${d.id}', 'reprovado')" style="flex:1; padding:8px; border:none; background:#f8d7da; color:#842029; border-radius:5px; font-weight:bold; cursor:pointer;">REPROVAR</button>
-                    </div>
-                </div>`;
-        });
-    });
-  }
-
-  window.decidirTroca = async (id, acao) => {
-      await updateDoc(doc(db, "Pedidos", id), { status: acao });
+  window.apagarAviso = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "Avisos", id)); };
+  window.confirmarLeitura = async (id) => { 
+      await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() });
+      alert("Confirmado!"); 
   };
 
-  // --- AUXILIARES ---
-  async function carregarColegasMesmoRole() {
+  // LOGICA TROCAS
+  async function carregarColegasRole() {
       const q = query(collection(db, "Utilizadores"), where("role", "==", userRole));
       const snap = await getDocs(q);
       const sel = document.getElementById("p-colega-select");
-      sel.innerHTML = '<option value="">-- Seleciona colega --</option>';
+      sel.innerHTML = '<option value="">Selecionar Colega</option>';
       snap.forEach(d => {
           if (d.data().email !== currentUser.email) {
-              const opt = document.createElement("option");
-              opt.value = d.data().email;
-              opt.dataset.nome = d.data().nome;
-              opt.textContent = d.data().nome;
+              const opt = document.createElement("option"); opt.value = d.data().email; opt.dataset.nome = d.data().nome; opt.textContent = d.data().nome;
               sel.appendChild(opt);
           }
       });
   }
 
-  function setViewer(divId, fId, pId, rawUrl) {
-    const wrapper = document.getElementById(divId);
-    if (!rawUrl) return;
-    let url = rawUrl.includes('<iframe') ? rawUrl.match(/src="([^"]+)"/)[1] : rawUrl.trim();
-    if (url.includes("/b/c/")) url += (url.includes("?") ? "&" : "?") + "action=embedview";
-    document.getElementById(fId).href = url.replace("action=embedview", "");
-    document.getElementById(pId).href = url.replace("action=embedview", "");
-    wrapper.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+  document.getElementById("btn-enviar-pedido").addEventListener("click", async () => {
+      const meuTurno = document.getElementById("p-meu-data").value + " (" + document.getElementById("p-meu-periodo").value + ")";
+      const pretTurno = document.getElementById("p-pret-data").value + " (" + document.getElementById("p-pret-periodo").value + ")";
+      const colega = document.getElementById("p-colega-select");
+      if(!colega.value) return;
+      await addDoc(collection(db, "Pedidos"), {
+          uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email,
+          meuTurno, turnoPretendido: pretTurno, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome,
+          status: "pendente", role: userRole, createdAt: serverTimestamp()
+      });
+      document.getElementById("pedido-msg").innerHTML = "✅ Enviado!";
+  });
+
+  function carregarMeusPedidos() {
+    onSnapshot(query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc")), snap => {
+        const div = document.getElementById("meus-pedidos");
+        div.innerHTML = "";
+        snap.forEach(d => {
+            const p = d.data();
+            div.innerHTML += `<div class="card">🔄 ${p.meuTurno} ➡️ ${p.turnoPretendido}<br><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>`;
+        });
+    });
   }
 
-  // NAVEGAÇÃO
-  document.getElementById("btn-login").addEventListener("click", async () => {
-    const u = document.getElementById("login-email").value.trim();
-    await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", document.getElementById("login-pass").value);
-  });
-  document.getElementById("btn-logout").addEventListener("click", () => signOut(auth));
+  function carregarGestao() {
+    onSnapshot(query(collection(db, "Pedidos"), where("status", "==", "pendente")), snap => {
+        const div = document.getElementById("lista-gestao");
+        div.innerHTML = snap.empty ? "Sem pendentes." : "";
+        snap.forEach(d => {
+            const p = d.data();
+            div.innerHTML += `<div class="card"><strong>${p.nome}</strong> (${p.role})<br>${p.meuTurno} ➡️ ${p.turnoPretendido}<br>
+                <button onclick="window.decidir('${d.id}', 'aprovado')" style="color:green; border:none; background:none; cursor:pointer; font-weight:bold; margin-top:10px;">APROVAR</button> | 
+                <button onclick="window.decidir('${d.id}', 'reprovado')" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold; margin-top:10px;">RECUSAR</button></div>`;
+        });
+    });
+  }
+
+  window.decidir = async (id, s) => { await updateDoc(doc(db, "Pedidos", id), { status: s }); };
+
+  // NAV
   document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-content").forEach(t => t.classList.add("hidden"));
       document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
       document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
       btn.classList.add("active");
   }));
+
+  // TOGGLES MEDICOS/TECNICOS
+  document.getElementById("btn-tec-atual").onclick = () => setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_atual);
+  document.getElementById("btn-tec-prox").onclick = () => setViewer("div-tec", "f-tec", "p-tec", linksDB.horario_tecnicos_proximo);
+  document.getElementById("btn-med-atual").onclick = () => setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_atual);
+  document.getElementById("btn-med-prox").onclick = () => setViewer("div-med", "f-med", "p-med", linksDB.horario_medicos_proximo);
+
+  document.getElementById("btn-login").onclick = () => {
+      const email = document.getElementById("login-email").value.trim() + (document.getElementById("login-email").value.includes("@") ? "" : "@imagiologia.local");
+      signInWithEmailAndPassword(auth, email, document.getElementById("login-pass").value).catch(() => alert("Erro!"));
+  };
+  document.getElementById("btn-logout").onclick = () => signOut(auth);
 </script>
 </body>
 </html>
