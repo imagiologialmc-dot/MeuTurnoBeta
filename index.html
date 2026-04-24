@@ -10,7 +10,18 @@
   <link rel="apple-touch-icon" href="icon-512.png">
   <link rel="icon" type="image/png" href="icon-512.png">
   
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark-mode');
+      }
+    })();
+  </script>
 
   <style>
     /* VARIÁVEIS BASE (MODO CLARO) */
@@ -18,38 +29,44 @@
       --primary: #2AA8A8; 
       --secondary: #2D6E8E; 
       --bg: #f0f4f7; 
-      --white: #ffffff; 
+      --surface: #ffffff; 
       --text-main: #333333;
       --text-muted: #666666;
       --border: #dddddd;
       --card-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      --nav-active: #2AA8A8;
     }
 
-    /* MODO ESCURO AUTOMÁTICO (DARK MODE) 🌙 */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212;
-        --white: #1e1e1e;
-        --text-main: #e0e0e0;
-        --text-muted: #aaaaaa;
-        --border: #333333;
-        --card-shadow: 0 2px 8px rgba(0,0,0,0.4);
-      }
-      .login-box input, .form-card input, .form-card select, .form-card textarea {
-        background: #2c2c2c !important; color: white !important; border-color: #444 !important;
-      }
-      .pedido-obs { background: #2a2a2a !important; }
-      .viewer-actions { background: #252525 !important; border-bottom: 1px solid #333 !important; }
-      .btn-action { color: #64B5F6 !important; }
-      .btn-action:hover { background: #333 !important; }
-      .btn-filter { background: #2c2c2c !important; border-color: #444 !important; color: #ccc !important; }
-      .nav-btn { color: #777 !important; }
+    /* MODO ESCURO (Estilo Android - Cinza Escuro Suave) 🌙 */
+    :root.dark-mode {
+      --bg: #202124;         /* Fundo geral cinza escuro */
+      --surface: #292A2D;    /* Cartões um pouco mais claros que o fundo */
+      --text-main: #E8EAED;  /* Texto claro */
+      --text-muted: #9AA0A6; /* Texto secundário cinza */
+      --border: #3C4043;     /* Bordas discretas */
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      --nav-active: #4DD0E1; /* Turquesa mais vibrante para contraste no escuro */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+    
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; 
+        background: var(--bg); 
+        color: var(--text-main); 
+        overflow-x: hidden; 
+        transition: background 0.3s ease, color 0.3s ease; 
+    }
+    
     .hidden { display: none !important; }
+
+    /* Estilo de Letra Sofisticada Aliva */
+    .brand-text {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
     
     /* LOGIN */
     #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); overflow: hidden; }
@@ -62,8 +79,11 @@
     
     .login-form-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: formEntry 1s forwards 2.8s; }
     @keyframes formEntry { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-    .login-box { background: var(--white); border-radius: 20px; padding: 30px 25px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.15); text-align: center; }
-    .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid var(--border); outline: none; text-align: left; font-size: 15px; background: var(--bg); color: var(--text-main); }
+    
+    .login-box { background: var(--surface); border-radius: 20px; padding: 30px 25px; width: 100%; box-shadow: var(--card-shadow); text-align: center; transition: background 0.3s; border: 1px solid var(--border); }
+    .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid var(--border); outline: none; text-align: left; font-size: 15px; background: var(--bg); color: var(--text-main); transition: 0.3s; }
+    .login-box input:focus { border-color: var(--primary); }
+    
     .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
     .btn-main:disabled { background: #888; cursor: not-allowed; opacity: 0.7; }
     #btn-forgot { margin-top: 15px; font-size: 13px; color: rgba(255,255,255,0.9); text-decoration: underline; cursor: pointer; display: inline-block; }
@@ -80,30 +100,33 @@
     .toggle-container { display: flex; gap: 8px; margin-bottom: 15px; }
     .btn-toggle { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: 2px solid var(--primary); }
     .btn-toggle.active { background: var(--primary); color: white; }
-    .btn-toggle.inactive { background: var(--white); color: var(--primary); }
+    .btn-toggle.inactive { background: var(--surface); color: var(--primary); }
 
     .filter-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-    .btn-filter { padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); white-space: nowrap; transition: 0.2s; }
+    .btn-filter { padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); white-space: nowrap; transition: 0.2s; }
     .btn-filter.active[data-f="pendente"] { background: #fff3cd; color: #856404; border-color: #ffeeba; }
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* CARDS */
-    .viewer-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 16px; border: 1px solid var(--border); }
-    .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid var(--border); }
-    .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
-    iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
+    /* CARDS E FORMULÁRIOS */
+    .viewer-card { background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 16px; border: 1px solid var(--border); transition: background 0.3s; }
+    .viewer-actions { display: flex; background: var(--bg); border-bottom: 1px solid var(--border); transition: background 0.3s; }
+    .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: var(--primary); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
+    .btn-action:hover { background: var(--border); }
+    iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; } /* Mantém o iframe branco para leitura de PDFs */
 
-    .form-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 16px; border-left: 4px solid var(--primary); text-align: left; }
+    .form-card { background: var(--surface); border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 16px; border-left: 4px solid var(--primary); text-align: left; transition: background 0.3s; }
     .form-group { margin-bottom: 15px; }
     .form-label { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: block; }
-    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid var(--border); outline: none; font-size: 14px; background: var(--bg); color: var(--text-main); }
+    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid var(--border); outline: none; font-size: 14px; background: var(--bg); color: var(--text-main); transition: 0.3s; }
+    .form-card input:focus, .form-card select:focus, .form-card textarea:focus { border-color: var(--primary); }
     .form-card textarea { resize: none; min-height: 80px; }
 
-    .card { background: var(--white); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: var(--card-shadow); border-left: 4px solid var(--border); text-align: left; }
+    .card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: var(--card-shadow); border-left: 4px solid var(--border); text-align: left; transition: background 0.3s; }
     .pedido-header { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-    .pedido-corpo { font-size: 14px; margin-bottom: 8px; }
-    .pedido-obs { font-size: 12px; color: var(--text-muted); font-style: italic; background: var(--bg); padding: 8px; border-radius: 6px; margin-bottom: 8px; }
+    .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: var(--text-main); }
+    .pedido-obs { font-size: 12px; color: var(--text-muted); font-style: italic; background: var(--bg); padding: 8px; border-radius: 6px; margin-bottom: 8px; transition: background 0.3s; }
+    .pedido-footer { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
     
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: #2AA8A8; }
@@ -115,10 +138,10 @@
     .status-reprovado { background: #f8d7da; color: #842029; }
 
     /* NAVEGAÇÃO */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; border-top: 1px solid var(--border); z-index: 100; overflow-x: auto; padding-bottom: env(safe-area-inset-bottom); }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; overflow-x: auto; padding-bottom: env(safe-area-inset-bottom); transition: background 0.3s; }
     .nav-btn { flex: 1; min-width: 62px; padding: 10px 2px 8px 2px; border: none; background: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
     .nav-btn .icon { font-size: 24px; transition: transform 0.2s; font-variation-settings: 'FILL' 0; }
-    .nav-btn.active { color: var(--primary); font-weight: 700; }
+    .nav-btn.active { color: var(--nav-active); font-weight: 700; }
     .nav-btn.active .icon { font-variation-settings: 'FILL' 1; transform: scale(1.1); }
 
     /* MODAIS */
@@ -135,8 +158,8 @@
   </div>
 
   <div class="login-form-container">
-    <h1 style="color:white; font-size:28px; font-weight:800; margin-bottom:5px;">MeuTurno</h1>
-    <p style="color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:25px;">v2.0</p>
+    <h1 class="brand-text" style="color:white; font-size:34px; margin-bottom:0px;">MeuTurno</h1>
+    <p style="color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:25px; letter-spacing: 1px;">v2.0</p>
     <div class="login-box">
       <input type="text" id="login-email" placeholder="Utilizador ou Email">
       <input type="password" id="login-pass" placeholder="Password">
@@ -149,14 +172,15 @@
 
 <div id="app-screen" class="hidden">
   <div class="app-header">
-    <div style="display:flex; align-items:center; gap:8px;">
-        <img src="icon-512.png" style="width: 26px; height: 26px; border-radius: 6px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.style.display='none'; document.getElementById('header-text-icon').style.display='inline';" alt="Logo">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="icon-512.png" style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.style.display='none'; document.getElementById('header-text-icon').style.display='inline';" alt="Logo">
         <span id="header-text-icon" style="display:none; font-size: 16px;">☢</span>
-        <strong style="font-size:17px; font-weight:800; letter-spacing: -0.2px;">MeuTurno</strong>
+        <strong class="brand-text" style="font-size:19px;">MeuTurno</strong>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-        <span id="header-bell" style="cursor:pointer; font-size:18px;" title="Gerir Notificações">🔕</span>
-        <div style="text-align:right; font-size:9px;">
+        <span id="theme-toggle" class="material-symbols-rounded" style="cursor:pointer; font-size:22px; transition: transform 0.3s;" title="Mudar Tema">dark_mode</span>
+        <span id="header-bell" style="cursor:pointer; font-size:20px;" title="Gerir Notificações">🔕</span>
+        <div style="text-align:right; font-size:9px; line-height: 1.2;">
             <span id="header-nome"></span><br>
             <span id="admin-tag" class="hidden" style="color:#FFD700; font-weight:bold;">COORDENAÇÃO</span>
         </div>
@@ -260,8 +284,8 @@
 </div>
 
 <div id="modal-notificacoes" class="modal-overlay hidden">
-    <div class="login-box">
-        <h3 style="color:var(--primary); font-size:20px;">Ativar Alertas 🔔</h3>
+    <div class="login-box" style="padding: 25px;">
+        <h3 style="color:var(--primary); font-size:20px; font-family: 'Montserrat', sans-serif;">Ativar Alertas 🔔</h3>
         <p style="font-size:14px; color:var(--text-muted); margin:15px 0;">Para seres avisado(a) sempre que tiveres uma nova troca de turno ou aviso da coordenação, ativa as notificações.</p>
         <button id="btn-ativar-notif" class="btn-main" style="margin-bottom:10px;">Ativar Notificações</button>
         <button id="btn-mais-tarde" style="width:100%; padding:10px; background:none; border:none; color:var(--text-muted); font-weight:bold; cursor:pointer;">Mais Tarde</button>
@@ -270,10 +294,10 @@
 
 <div id="modal-aviso" class="modal-overlay hidden">
     <div class="login-box" style="text-align:left;">
-        <h3 style="color:var(--primary); text-align:center;">Novo Aviso</h3>
+        <h3 style="color:var(--primary); text-align:center; font-family: 'Montserrat', sans-serif;">Novo Aviso</h3>
         <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main); resize:none;" placeholder="Escreva aqui..."></textarea>
         <div style="display:flex; gap:10px;">
-            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold; cursor:pointer; color:#333;">Cancelar</button>
+            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--bg); color:var(--text-main); font-weight:bold; cursor:pointer;">Cancelar</button>
             <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;">Publicar</button>
         </div>
     </div>
@@ -281,8 +305,8 @@
 
 <div id="modal-vistos" class="modal-overlay hidden">
     <div class="login-box">
-        <h3 style="color:var(--primary);">Confirmaram leitura:</h3>
-        <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:14px; text-align:left;"></div>
+        <h3 style="color:var(--primary); font-family: 'Montserrat', sans-serif;">Confirmaram leitura:</h3>
+        <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:14px; text-align:left; color:var(--text-main);"></div>
         <button onclick="document.getElementById('modal-vistos').classList.add('hidden')" class="btn-main" style="margin-top:0;">Fechar</button>
     </div>
 </div>
@@ -322,11 +346,38 @@
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // DATA LIMITE PARA HISTÓRICO (Últimos 60 Dias)
   const limiteData = new Date();
   limiteData.setDate(limiteData.getDate() - 60);
 
-  // --- MOTOR DE NOTIFICAÇÕES & OFFLINE ---
+  // --- CONTROLO DO TEMA (DARK/LIGHT MODE) ---
+  const themeToggle = document.getElementById('theme-toggle');
+  
+  function updateThemeIcon() {
+      if (document.documentElement.classList.contains('dark-mode')) {
+          themeToggle.textContent = 'light_mode';
+          themeToggle.style.color = '#FFD700'; // Sol amarelo
+      } else {
+          themeToggle.textContent = 'dark_mode';
+          themeToggle.style.color = 'white'; // Lua branca
+      }
+  }
+  
+  updateThemeIcon(); // Atualiza logo no início
+
+  themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark-mode');
+      if (document.documentElement.classList.contains('dark-mode')) {
+          localStorage.setItem('theme', 'dark');
+      } else {
+          localStorage.setItem('theme', 'light');
+      }
+      updateThemeIcon();
+      // Pequena animação de rotação ao clicar
+      themeToggle.style.transform = 'rotate(360deg)';
+      setTimeout(() => themeToggle.style.transform = 'none', 300);
+  });
+
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./firebase-messaging-sw.js').catch(e => console.error("SW Erro:", e));
   }
@@ -388,7 +439,6 @@
       else alert("✅ As suas notificações já estão ativas!");
   };
 
-  // --- VISUALIZADOR DE DOCUMENTOS ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
@@ -406,7 +456,6 @@
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
 
-  // --- INICIALIZAÇÃO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
@@ -449,13 +498,11 @@
     }
   });
 
-  // --- FUNÇÕES DE INTERFACE ---
   function carregarGestao() {
-    // Busca pedidos recentes (últimos 60 dias) com base no filtro
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? `<p style='padding:20px; color:var(--text-muted); text-align:center;'>Nenhum registo recente encontrado.</p>` : "";
+        div.innerHTML = snap.empty ? `<p style='padding:20px; color:var(--text-muted); text-align:center;'>Nenhum registo recente.</p>` : "";
         snap.forEach(d => {
             const p = d.data();
             const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Agora";
@@ -495,7 +542,6 @@
   };
 
   function carregarMeusPedidos() {
-    // Busca apenas o histórico recente do utilizador (últimos 60 dias)
     const q = query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("meus-pedidos");
@@ -538,7 +584,7 @@
       const pretD = document.getElementById("p-pret-data").value; const pretP = document.getElementById("p-pret-periodo").value;
       const obs = document.getElementById("p-motivo").value;
       
-      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { msg.innerHTML = "<span style='color:red;'>❌ Preencha todas as datas e o colega.</span>"; return; }
+      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { msg.innerHTML = "<span style='color:red;'>❌ Preencha todas as datas.</span>"; return; }
 
       btn.disabled = true; btn.innerText = "A aguardar...";
       try {
@@ -552,7 +598,7 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          msg.innerHTML = "<span style='color:green;'>✅ Pedido registado!</span>";
+          msg.innerHTML = "<span style='color:var(--primary); font-weight:bold;'>✅ Pedido registado!</span>";
           document.getElementById("p-meu-periodo").value = ""; document.getElementById("p-pret-periodo").value = ""; document.getElementById("p-motivo").value = "";
           btn.disabled = false; btn.innerText = "Enviar Pedido";
 
@@ -562,7 +608,6 @@
   };
 
   function carregarAvisos() {
-    // Busca apenas avisos recentes (últimos 60 dias)
     const q = query(collection(db, "Avisos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-avisos");
@@ -623,7 +668,6 @@
   document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "dl-med", linksDB.horario_medicos_atual); };
   document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "dl-med", linksDB.horario_medicos_proximo); };
 
-  // --- LOGIN COM FEEDBACK DE CARREGAMENTO ---
   document.getElementById("btn-login").onclick = async () => {
       const btn = document.getElementById("btn-login");
       const err = document.getElementById("login-error");
@@ -631,34 +675,20 @@
       const p = document.getElementById("login-pass").value;
 
       if(!u || !p) { err.textContent = "Preencha todos os campos."; return; }
-
-      // Ativa o Loading state
-      btn.disabled = true;
-      btn.textContent = "A verificar...";
-      err.textContent = "";
+      btn.disabled = true; btn.textContent = "A verificar..."; err.textContent = "";
 
       try {
           await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", p);
       } catch(e) {
           err.textContent = "Credenciais inválidas.";
-          // Reverte se falhar
-          btn.disabled = false;
-          btn.textContent = "ENTRAR";
+          btn.disabled = false; btn.textContent = "ENTRAR";
       }
   };
 
-  // --- RECUPERAÇÃO DE PASSWORD ---
   document.getElementById("btn-forgot").onclick = () => {
       const email = document.getElementById("login-email").value.trim();
-      if(!email || !email.includes("@")) {
-          alert("Por favor, digite o seu e-mail completo na caixa acima e clique novamente em 'Esqueci-me da password'.");
-          return;
-      }
-      sendPasswordResetEmail(auth, email).then(() => {
-          alert("✅ Link de recuperação enviado!\n\nVerifique o seu email (e a pasta de SPAM) para redefinir a palavra-passe.");
-      }).catch(err => {
-          alert("❌ Erro ao enviar email. Verifique se o endereço está escrito corretamente.");
-      });
+      if(!email || !email.includes("@")) { alert("Por favor, digite o seu e-mail na caixa acima e clique novamente em 'Esqueci-me da password'."); return; }
+      sendPasswordResetEmail(auth, email).then(() => alert("✅ Link enviado! Verifique o seu email para redefinir a palavra-passe.")).catch(err => alert("❌ Erro ao enviar email. Verifique o endereço."));
   };
   
   document.getElementById("btn-logout").onclick = () => { signOut(auth).then(() => window.location.reload()); };
