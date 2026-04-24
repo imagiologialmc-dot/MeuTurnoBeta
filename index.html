@@ -9,6 +9,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="icon-512.png">
   <link rel="icon" type="image/png" href="icon-512.png">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
+
   <style>
     :root { --primary: #2AA8A8; --secondary: #2D6E8E; --bg: #f0f4f7; --white: #ffffff; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,11 +86,45 @@
     .status-aprovado { background: #d1e7dd; color: #0f5132; }
     .status-reprovado { background: #f8d7da; color: #842029; }
 
-    /* NAVEGAÇÃO */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; overflow-x: auto; }
-    .nav-btn { flex: 1; min-width: 60px; padding: 8px 2px; border: none; background: none; color: #999; font-size: 9px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-    .nav-btn.active { color: var(--primary); font-weight: 700; }
-    .nav-btn .icon { font-size: 22px; }
+    /* NAVEGAÇÃO MODERNIZADA COM ÍCONES VETORIAIS */
+    .bottom-nav { 
+        position: fixed; 
+        bottom: 0; left: 0; right: 0; 
+        background: white; 
+        display: flex; 
+        border-top: 1px solid #e0e0e0; 
+        z-index: 100; 
+        overflow-x: auto; 
+        padding-bottom: env(safe-area-inset-bottom); /* Adapta-se aos novos iPhones */
+    }
+    .nav-btn { 
+        flex: 1; 
+        min-width: 62px; 
+        padding: 10px 2px 8px 2px; 
+        border: none; 
+        background: none; 
+        color: #888; /* Cor inativa mais suave */
+        font-size: 10px; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 4px; 
+        cursor: pointer; 
+        transition: color 0.2s; 
+    }
+    .nav-btn .icon { 
+        font-size: 24px; 
+        transition: transform 0.2s; 
+        font-variation-settings: 'FILL' 0; /* Ícone vazado por defeito */
+    }
+    .nav-btn.active { 
+        color: var(--primary); 
+        font-weight: 700; 
+    }
+    .nav-btn.active .icon { 
+        font-variation-settings: 'FILL' 1; /* Preenche o ícone quando ativo */
+        transform: scale(1.1); 
+    }
 
     /* MODAIS */
     .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -130,13 +167,13 @@
   </div>
 
   <div id="tab-avisos" class="tab-content">
-    <div class="section-title">📢 Quadro de Avisos</div>
+    <div class="section-title"><span class="material-symbols-rounded">campaign</span> Quadro de Avisos</div>
     <button id="btn-novo-aviso" class="btn-main hidden" style="margin-bottom:15px;">+ Novo Aviso</button>
     <div id="lista-avisos"></div>
   </div>
 
   <div id="tab-tecnicos" class="tab-content hidden">
-    <div class="section-title">📅 Horário Técnicos</div>
+    <div class="section-title"><span class="material-symbols-rounded">calendar_month</span> Horário Técnicos</div>
     <div class="toggle-container">
         <button id="btn-tec-atual" class="btn-toggle active">Mês Atual</button>
         <button id="btn-tec-prox" class="btn-toggle inactive">Próximo Mês</button>
@@ -148,7 +185,7 @@
   </div>
 
   <div id="tab-medicos" class="tab-content hidden">
-    <div class="section-title">🩺 Horário Médicos</div>
+    <div class="section-title"><span class="material-symbols-rounded">stethoscope</span> Horário Médicos</div>
     <div class="toggle-container">
         <button id="btn-med-atual" class="btn-toggle active">Mês Atual</button>
         <button id="btn-med-prox" class="btn-toggle inactive">Próximo Mês</button>
@@ -160,7 +197,7 @@
   </div>
 
   <div id="tab-oncall" class="tab-content hidden">
-    <div class="section-title">🚨 Oncall Anestesia</div>
+    <div class="section-title"><span class="material-symbols-rounded">emergency</span> Oncall Anestesia</div>
     <div class="viewer-card">
       <div class="viewer-actions"><a href="#" id="dl-oncall" class="btn-action" target="_blank">📥 Fazer Download</a></div>
       <div id="div-oncall"></div>
@@ -168,7 +205,7 @@
   </div>
 
   <div id="tab-telefones" class="tab-content hidden">
-    <div class="section-title">📞 Contactos Úteis</div>
+    <div class="section-title"><span class="material-symbols-rounded">contact_phone</span> Contactos Úteis</div>
     <div class="viewer-card">
       <div class="viewer-actions"><a href="#" id="dl-tel" class="btn-action" target="_blank">📥 Fazer Download</a></div>
       <div id="div-tel"></div>
@@ -176,7 +213,7 @@
   </div>
 
   <div id="tab-pedidos" class="tab-content hidden">
-    <div class="section-title">🔄 Pedido de Troca</div>
+    <div class="section-title"><span class="material-symbols-rounded">swap_horiz</span> Pedido de Troca</div>
     <div class="form-card">
         <div class="form-group">
             <label class="form-label">📅 O meu turno</label>
@@ -204,7 +241,7 @@
   </div>
 
   <div id="tab-gestao" class="tab-content hidden">
-    <div class="section-title">⚙️ Gestão de Trocas</div>
+    <div class="section-title"><span class="material-symbols-rounded">settings</span> Gestão de Trocas</div>
     <div class="filter-container">
         <button class="btn-filter active" data-f="pendente">⏳ Pendentes</button>
         <button class="btn-filter" data-f="aprovado">✅ Aprovados</button>
@@ -214,13 +251,13 @@
   </div>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-tab="avisos"><span class="icon">📢</span>Avisos</button>
-    <button class="nav-btn" data-tab="tecnicos"><span class="icon">📅</span>Técnicos</button>
-    <button class="nav-btn" data-tab="medicos"><span class="icon">🩺</span>Médicos</button>
-    <button class="nav-btn" data-tab="oncall"><span class="icon">🚨</span>Oncall</button>
-    <button class="nav-btn" data-tab="telefones"><span class="icon">📞</span>Lista</button>
-    <button class="nav-btn" data-tab="pedidos"><span class="icon">🔄</span>Trocas</button>
-    <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="icon">⚙️</span>Gestão</button>
+    <button class="nav-btn active" data-tab="avisos"><span class="material-symbols-rounded icon">campaign</span>Avisos</button>
+    <button class="nav-btn" data-tab="tecnicos"><span class="material-symbols-rounded icon">calendar_month</span>Técnicos</button>
+    <button class="nav-btn" data-tab="medicos"><span class="material-symbols-rounded icon">stethoscope</span>Médicos</button>
+    <button class="nav-btn" data-tab="oncall"><span class="material-symbols-rounded icon">emergency</span>Oncall</button>
+    <button class="nav-btn" data-tab="telefones"><span class="material-symbols-rounded icon">contact_phone</span>Lista</button>
+    <button class="nav-btn" data-tab="pedidos"><span class="material-symbols-rounded icon">sync_alt</span>Trocas</button>
+    <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="material-symbols-rounded icon">settings</span>Gestão</button>
   </nav>
 </div>
 
@@ -305,7 +342,7 @@
     if (!('Notification' in window)) return;
     try {
       const perm = await Notification.requestPermission();
-      atualizarIconeSino(); // Atualiza o sino assim que o utilizador decide
+      atualizarIconeSino();
       if (perm === 'granted') {
         const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
         const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
@@ -323,31 +360,28 @@
       atualizarIconeSino();
 
       if (Notification.permission === "default") {
-          // Lógica "Anti-Nagging" (Só volta a perguntar 3 dias depois do "Mais Tarde")
           const lastAsked = localStorage.getItem('notif_last_asked');
           const now = new Date().getTime();
-          const waitTime = 3 * 24 * 60 * 60 * 1000; // 3 Dias em milissegundos
+          const waitTime = 3 * 24 * 60 * 60 * 1000;
 
           if (!lastAsked || (now - parseInt(lastAsked)) > waitTime) {
               document.getElementById("modal-notificacoes").classList.remove("hidden");
           }
       } else if (Notification.permission === "granted") {
-          pedirNotificacoes(); // Refresh silencioso do token
+          pedirNotificacoes();
       }
   }
 
-  // Comportamento dos botões do Modal de Notificações
   document.getElementById("btn-ativar-notif").onclick = async () => {
       document.getElementById("modal-notificacoes").classList.add("hidden");
       await pedirNotificacoes();
   };
 
   document.getElementById("btn-mais-tarde").onclick = () => {
-      localStorage.setItem('notif_last_asked', new Date().getTime()); // Guarda a data de hoje
+      localStorage.setItem('notif_last_asked', new Date().getTime());
       document.getElementById("modal-notificacoes").classList.add("hidden");
   };
 
-  // Comportamento de clicar diretamente no Sino no cabeçalho
   document.getElementById("header-bell").onclick = async () => {
       if (!('Notification' in window)) return;
       if (Notification.permission === "default") {
@@ -471,20 +505,17 @@
   window.decidir = async (btn, id, s) => { 
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
           btn.disabled = true;
-          btn.innerText = "Aguarde...";
-          btn.style.opacity = "0.5";
           
           await updateDoc(doc(db, "Pedidos", id), { status: s });
           
-          const p = await getDoc(doc(db, "Pedidos", id));
-          if(p.exists()) {
-             try {
-                await fetch(`${API_BASE}/status`, {
+          getDoc(doc(db, "Pedidos", id)).then(p => {
+              if(p.exists()) {
+                 fetch(`${API_BASE}/status`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: p.data().email, status: s })
-                });
-             } catch(e) {}
-          }
+                 }).catch(e => console.log("Push de status ignorado no cliente"));
+              }
+          });
       }
   };
 
@@ -546,7 +577,6 @@
 
       btn.disabled = true;
       btn.innerText = "A aguardar...";
-      msg.innerHTML = "⏳ A gravar o pedido...";
 
       try {
           const meuTurnoFinal = formatarParaDB(meuD, meuP);
@@ -559,25 +589,21 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id });
-          
-          try {
-            await fetch(`${API_BASE}/pedido`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
-            });
-          } catch(e) {}
-          
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
-          
           document.getElementById("p-meu-periodo").value = "";
           document.getElementById("p-pret-periodo").value = "";
           document.getElementById("p-motivo").value = "";
-          
           btn.disabled = false;
           btn.innerText = "Enviar Pedido";
+
+          emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
+          fetch(`${API_BASE}/pedido`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
+          }).catch(e => {});
+
       } catch(e) { 
-          msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação com o servidor.</span>";
+          msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação.</span>";
           btn.disabled = false;
           btn.innerText = "Enviar Pedido";
       }
