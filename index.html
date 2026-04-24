@@ -17,77 +17,20 @@
     .hidden { display: none !important; }
     
     /* --- LOGIN ANIMADO --- */
-    #login-screen { 
-      min-height: 100vh; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      padding: 30px 20px; 
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
-      overflow: hidden;
-    }
-
-    .logo-anim-container {
-      position: relative;
-      width: 280px; 
-      height: 150px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .logo-clinic { 
-      position: absolute;
-      width: 240px; 
-      height: auto;
-      object-fit: contain;
-      animation: clinicPulse 3.5s forwards; 
-    }
-
-    .logo-app { 
-      position: absolute;
-      width: 130px; 
-      height: 130px;
-      border-radius: 32px;
-      object-fit: cover;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
-      opacity: 0; 
-      animation: appFadeIn 3.5s forwards; 
-    }
-
+    #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); overflow: hidden; }
+    .logo-anim-container { position: relative; width: 280px; height: 150px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
+    .logo-clinic { position: absolute; width: 240px; height: auto; object-fit: contain; animation: clinicPulse 3.5s forwards; }
+    .logo-app { position: absolute; width: 130px; height: 130px; border-radius: 32px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.3); opacity: 0; animation: appFadeIn 3.5s forwards; }
+    
     @keyframes clinicPulse {
-      0% { opacity: 0; transform: scale(0.9); }
-      15% { opacity: 1; transform: scale(1); }
-      35% { opacity: 1; transform: scale(1.05); }
-      60% { opacity: 1; transform: scale(1.05); }
-      80% { opacity: 0; transform: scale(0.9); }
-      100% { opacity: 0; transform: scale(0.9); visibility: hidden; }
+      0% { opacity: 0; transform: scale(0.9); } 15% { opacity: 1; transform: scale(1); } 35% { opacity: 1; transform: scale(1.05); } 60% { opacity: 1; transform: scale(1.05); } 80% { opacity: 0; transform: scale(0.9); } 100% { opacity: 0; transform: scale(0.9); visibility: hidden; }
     }
-
     @keyframes appFadeIn {
-      0% { opacity: 0; transform: scale(0.5); }
-      75% { opacity: 0; transform: scale(0.5); }
-      90% { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 0; transform: scale(0.5); } 75% { opacity: 0; transform: scale(0.5); } 90% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); }
     }
-
-    .login-form-container {
-      width: 100%;
-      max-width: 360px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      opacity: 0;
-      animation: formEntry 1s forwards 2.8s;
-    }
-
-    @keyframes formEntry {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
+    
+    .login-form-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: formEntry 1s forwards 2.8s; }
+    @keyframes formEntry { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
     .login-box { background: var(--white); border-radius: 20px; padding: 30px 25px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.15); text-align: center; }
     .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid #eee; outline: none; text-align: left; font-size: 15px; }
     .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
@@ -101,7 +44,7 @@
     .tab-content { padding: 12px; padding-bottom: 90px; }
     .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; display: flex; align-items: center; gap: 8px; }
 
-    /* BOTÕES DE ALTERNÂNCIA (MÊS) */
+    /* BOTÕES DE ALTERNÂNCIA */
     .toggle-container { display: flex; gap: 8px; margin-bottom: 15px; }
     .btn-toggle { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: 2px solid var(--primary); }
     .btn-toggle.active { background: var(--primary); color: white; }
@@ -114,26 +57,22 @@
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    /* VISUALIZADOR DE DOCUMENTOS */
+    /* VISUALIZADOR PDF */
     .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
     .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid #ddd; }
     .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
     .btn-action:hover { background: #dce7ff; }
     iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    /* FORMULÁRIO DE TROCAS */
+    /* FORMULÁRIOS & CARDS */
     .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); text-align: left; }
     .form-group { margin-bottom: 15px; }
     .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; display: block; }
     .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
     .form-card textarea { resize: none; min-height: 80px; }
 
-    /* CARDS DE HISTÓRICO / GESTÃO / AVISOS */
     .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; text-align: left; }
     .pedido-header { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
-    .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: #333; }
-    .pedido-obs { font-size: 12px; color: #666; font-style: italic; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 8px; }
-    .pedido-footer { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
     
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: #2AA8A8; }
@@ -150,7 +89,7 @@
     .nav-btn.active { color: var(--primary); font-weight: 700; }
     .nav-btn .icon { font-size: 22px; }
 
-    /* MODAIS GERAIS */
+    /* MODAIS */
     .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
   </style>
 </head>
@@ -166,7 +105,6 @@
   <div class="login-form-container">
     <h1 style="color:white; font-size:28px; font-weight:800; margin-bottom:5px;">MeuTurno</h1>
     <p style="color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:25px;">v2.0</p>
-    
     <div class="login-box">
       <input type="text" id="login-email" placeholder="Utilizador ou Email">
       <input type="password" id="login-pass" placeholder="Password">
@@ -178,8 +116,11 @@
 
 <div id="app-screen" class="hidden">
   <div class="app-header">
-    <div><strong>☢ MeuTurno v2.0</strong></div>
-    <div style="display:flex; align-items:center; gap:8px;">
+    <div style="display:flex; align-items:center; gap:5px;">
+        <strong>☢ MeuTurno</strong>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <span id="header-bell" style="cursor:pointer; font-size:18px;" title="Gerir Notificações">🔕</span>
         <div style="text-align:right; font-size:9px;">
             <span id="header-nome"></span><br>
             <span id="admin-tag" class="hidden" style="color:#FFD700; font-weight:bold;">COORDENAÇÃO</span>
@@ -288,7 +229,7 @@
         <h3 style="color:var(--secondary); font-size:20px;">Ativar Alertas 🔔</h3>
         <p style="font-size:14px; color:#555; margin:15px 0;">Para seres avisado(a) sempre que tiveres uma nova troca de turno ou aviso da coordenação, ativa as notificações.</p>
         <button id="btn-ativar-notif" class="btn-main" style="margin-bottom:10px;">Ativar Notificações</button>
-        <button onclick="document.getElementById('modal-notificacoes').classList.add('hidden')" style="width:100%; padding:10px; background:none; border:none; color:#888; font-weight:bold; cursor:pointer;">Mais Tarde</button>
+        <button id="btn-mais-tarde" style="width:100%; padding:10px; background:none; border:none; color:#888; font-weight:bold; cursor:pointer;">Mais Tarde</button>
     </div>
 </div>
 
@@ -346,44 +287,84 @@
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
-  // --- MOTOR DE NOTIFICAÇÕES & VERIFICAÇÃO ---
+  // --- MOTOR DE NOTIFICAÇÕES & VERIFICAÇÃO INTELIGENTE ---
+  function atualizarIconeSino() {
+      const bell = document.getElementById("header-bell");
+      if (!('Notification' in window)) { bell.style.display = 'none'; return; }
+      
+      if (Notification.permission === "granted") {
+          bell.innerText = "🔔";
+          bell.title = "Notificações Ativas";
+      } else {
+          bell.innerText = "🔕";
+          bell.title = "Notificações Desativadas";
+      }
+  }
+
   async function pedirNotificacoes() {
     if (!('Notification' in window)) return;
     try {
       const perm = await Notification.requestPermission();
+      atualizarIconeSino(); // Atualiza o sino assim que o utilizador decide
       if (perm === 'granted') {
         const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
         const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
         if (token) {
           await setDoc(doc(db, 'Utilizadores', currentUser.uid, 'tokens', token), { token: token, updatedAt: serverTimestamp() }, { merge: true });
         }
+      } else if (perm === 'denied') {
+        alert("Bloqueou as notificações. Se mudar de ideias, vá às definições do browser ou toque no 'Cadeado' na barra de endereço.");
       }
     } catch(e) { console.error("Erro push:", e); }
   }
 
   function gerirAvisoNotificacoes() {
       if (!('Notification' in window)) return;
+      atualizarIconeSino();
+
       if (Notification.permission === "default") {
-          document.getElementById("modal-notificacoes").classList.remove("hidden");
+          // Lógica "Anti-Nagging" (Só volta a perguntar 3 dias depois do "Mais Tarde")
+          const lastAsked = localStorage.getItem('notif_last_asked');
+          const now = new Date().getTime();
+          const waitTime = 3 * 24 * 60 * 60 * 1000; // 3 Dias em milissegundos
+
+          if (!lastAsked || (now - parseInt(lastAsked)) > waitTime) {
+              document.getElementById("modal-notificacoes").classList.remove("hidden");
+          }
       } else if (Notification.permission === "granted") {
-          pedirNotificacoes();
+          pedirNotificacoes(); // Refresh silencioso do token
       }
   }
 
+  // Comportamento dos botões do Modal de Notificações
   document.getElementById("btn-ativar-notif").onclick = async () => {
       document.getElementById("modal-notificacoes").classList.add("hidden");
       await pedirNotificacoes();
   };
 
-  // --- VISUALIZADOR DE DOCUMENTOS COM DOWNLOAD FORÇADO ---
+  document.getElementById("btn-mais-tarde").onclick = () => {
+      localStorage.setItem('notif_last_asked', new Date().getTime()); // Guarda a data de hoje
+      document.getElementById("modal-notificacoes").classList.add("hidden");
+  };
+
+  // Comportamento de clicar diretamente no Sino no cabeçalho
+  document.getElementById("header-bell").onclick = async () => {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === "default") {
+          await pedirNotificacoes();
+      } else if (Notification.permission === "denied") {
+          alert("⚠️ As notificações estão bloqueadas nas configurações do seu telemóvel/browser.\n\nPara ativar: Toque no ícone de Cadeado (🔒) na barra de endereço lá em cima, vá a Permissões e permita as Notificações.");
+      } else {
+          alert("✅ As suas notificações já estão ativas e configuradas!");
+      }
+  };
+
+  // --- VISUALIZADOR DE DOCUMENTOS ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
     
-    if (!rawUrl) { 
-        wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível.</p>"; 
-        return; 
-    }
+    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível.</p>"; return; }
     
     let url = rawUrl;
     if (url.includes("src=")) {
@@ -487,24 +468,23 @@
       });
   });
 
-  // FUNÇÃO DECIDIR: INSTANTÂNEA E DISPARA NOTIFICAÇÃO EM BACKGROUND
   window.decidir = async (btn, id, s) => { 
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
-          // Desativa o botão temporariamente para evitar duplo clique
           btn.disabled = true;
+          btn.innerText = "Aguarde...";
+          btn.style.opacity = "0.5";
           
-          // 1. Atualiza no Firebase (Super rápido, atualiza a UI)
           await updateDoc(doc(db, "Pedidos", id), { status: s });
           
-          // 2. Dispara a notificação para o Render em pano de fundo (sem "await" bloqueante)
-          getDoc(doc(db, "Pedidos", id)).then(p => {
-              if(p.exists()) {
-                 fetch(`${API_BASE}/status`, {
+          const p = await getDoc(doc(db, "Pedidos", id));
+          if(p.exists()) {
+             try {
+                await fetch(`${API_BASE}/status`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: p.data().email, status: s })
-                 }).catch(e => console.log("Push de status ignorado no cliente"));
-              }
-          });
+                });
+             } catch(e) {}
+          }
       }
   };
 
@@ -549,7 +529,6 @@
       return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
   };
 
-  // FUNÇÃO ENVIAR PEDIDO: INSTANTÂNEA E EM BACKGROUND
   document.getElementById("btn-enviar-pedido").onclick = async function() {
       const btn = this;
       const msg = document.getElementById("pedido-msg");
@@ -567,12 +546,12 @@
 
       btn.disabled = true;
       btn.innerText = "A aguardar...";
+      msg.innerHTML = "⏳ A gravar o pedido...";
 
       try {
           const meuTurnoFinal = formatarParaDB(meuD, meuP);
           const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
 
-          // 1. Gravar no Firebase (Rápido)
           const docRef = await addDoc(collection(db, "Pedidos"), {
               uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email,
               meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, 
@@ -580,21 +559,23 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          // 2. Dar feedback visual imediato ao utilizador
+          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id });
+          
+          try {
+            await fetch(`${API_BASE}/pedido`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
+            });
+          } catch(e) {}
+          
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
+          
           document.getElementById("p-meu-periodo").value = "";
           document.getElementById("p-pret-periodo").value = "";
           document.getElementById("p-motivo").value = "";
+          
           btn.disabled = false;
           btn.innerText = "Enviar Pedido";
-
-          // 3. Enviar email e push notification em background (sem bloquear)
-          emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
-          fetch(`${API_BASE}/pedido`, {
-              method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
-          }).catch(e => {});
-
       } catch(e) { 
           msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação com o servidor.</span>";
           btn.disabled = false;
@@ -626,7 +607,6 @@
     });
   }
 
-  // PUBLICAR AVISO: INSTANTÂNEO E EM BACKGROUND
   document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
   document.getElementById("btn-publicar").addEventListener("click", async function() {
       const btn = this;
@@ -635,15 +615,12 @@
       
       btn.disabled = true;
 
-      // 1. Gravar Aviso no Firebase
       await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
       
-      // 2. Fechar modal e resetar botões IMEDIATAMENTE
       document.getElementById("modal-aviso").classList.add("hidden");
       document.getElementById("aviso-texto").value = "";
       btn.disabled = false;
 
-      // 3. Mandar notificação de aviso novo em background
       fetch(`${API_BASE}/aviso`, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt })
