@@ -16,7 +16,7 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: #333; overflow-x: hidden; }
     .hidden { display: none !important; }
     
-    /* --- LOGIN ANIMADO (CORRIGIDO) --- */
+    /* --- LOGIN ANIMADO --- */
     #login-screen { 
       min-height: 100vh; 
       display: flex; 
@@ -30,7 +30,7 @@
 
     .logo-anim-container {
       position: relative;
-      width: 280px; /* Alargado para caber o logo da Aliva sem cortar */
+      width: 280px; 
       height: 150px;
       margin-bottom: 10px;
       display: flex;
@@ -38,7 +38,6 @@
       align-items: center;
     }
 
-    /* Logo da Clínica: Retangular, Proporcional, Sem Fundo */
     .logo-clinic { 
       position: absolute;
       width: 240px; 
@@ -47,14 +46,13 @@
       animation: clinicPulse 3.5s forwards; 
     }
 
-    /* Ícone da App: Formato Squircle (iPhone), com Sombra Elevada */
     .logo-app { 
       position: absolute;
       width: 130px; 
       height: 130px;
-      border-radius: 32px; /* Corta os cantos brancos perfeitamente */
+      border-radius: 32px;
       object-fit: cover;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3); /* Sombra elegante */
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
       opacity: 0; 
       animation: appFadeIn 3.5s forwards; 
     }
@@ -377,7 +375,7 @@
       await pedirNotificacoes();
   };
 
-  // --- VISUALIZADOR DE DOCUMENTOS ---
+  // --- VISUALIZADOR DE DOCUMENTOS COM DOWNLOAD FORÇADO ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
@@ -489,23 +487,24 @@
       });
   });
 
+  // FUNÇÃO DECIDIR: INSTANTÂNEA E DISPARA NOTIFICAÇÃO EM BACKGROUND
   window.decidir = async (btn, id, s) => { 
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
+          // Desativa o botão temporariamente para evitar duplo clique
           btn.disabled = true;
-          btn.innerText = "Aguarde...";
-          btn.style.opacity = "0.5";
           
+          // 1. Atualiza no Firebase (Super rápido, atualiza a UI)
           await updateDoc(doc(db, "Pedidos", id), { status: s });
           
-          const p = await getDoc(doc(db, "Pedidos", id));
-          if(p.exists()) {
-             try {
-                await fetch(`${API_BASE}/status`, {
+          // 2. Dispara a notificação para o Render em pano de fundo (sem "await" bloqueante)
+          getDoc(doc(db, "Pedidos", id)).then(p => {
+              if(p.exists()) {
+                 fetch(`${API_BASE}/status`, {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: p.data().email, status: s })
-                });
-             } catch(e) {}
-          }
+                 }).catch(e => console.log("Push de status ignorado no cliente"));
+              }
+          });
       }
   };
 
@@ -550,6 +549,7 @@
       return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
   };
 
+  // FUNÇÃO ENVIAR PEDIDO: INSTANTÂNEA E EM BACKGROUND
   document.getElementById("btn-enviar-pedido").onclick = async function() {
       const btn = this;
       const msg = document.getElementById("pedido-msg");
@@ -567,12 +567,12 @@
 
       btn.disabled = true;
       btn.innerText = "A aguardar...";
-      msg.innerHTML = "⏳ A gravar o pedido...";
 
       try {
           const meuTurnoFinal = formatarParaDB(meuD, meuP);
           const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
 
+          // 1. Gravar no Firebase (Rápido)
           const docRef = await addDoc(collection(db, "Pedidos"), {
               uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email,
               meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, 
@@ -580,23 +580,21 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          await emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id });
-          
-          try {
-            await fetch(`${API_BASE}/pedido`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
-            });
-          } catch(e) {}
-          
+          // 2. Dar feedback visual imediato ao utilizador
           msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
-          
           document.getElementById("p-meu-periodo").value = "";
           document.getElementById("p-pret-periodo").value = "";
           document.getElementById("p-motivo").value = "";
-          
           btn.disabled = false;
           btn.innerText = "Enviar Pedido";
+
+          // 3. Enviar email e push notification em background (sem bloquear)
+          emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
+          fetch(`${API_BASE}/pedido`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
+          }).catch(e => {});
+
       } catch(e) { 
           msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação com o servidor.</span>";
           btn.disabled = false;
@@ -628,6 +626,7 @@
     });
   }
 
+  // PUBLICAR AVISO: INSTANTÂNEO E EM BACKGROUND
   document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
   document.getElementById("btn-publicar").addEventListener("click", async function() {
       const btn = this;
@@ -635,21 +634,20 @@
       if(!txt) return;
       
       btn.disabled = true;
-      btn.innerText = "A aguardar...";
 
+      // 1. Gravar Aviso no Firebase
       await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
       
-      try {
-        await fetch(`${API_BASE}/aviso`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt })
-        });
-      } catch(e) {}
-
+      // 2. Fechar modal e resetar botões IMEDIATAMENTE
       document.getElementById("modal-aviso").classList.add("hidden");
       document.getElementById("aviso-texto").value = "";
       btn.disabled = false;
-      btn.innerText = "Publicar";
+
+      // 3. Mandar notificação de aviso novo em background
+      fetch(`${API_BASE}/aviso`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt })
+      }).catch(e => {});
   });
 
   window.verQuemViu = async (id) => {
