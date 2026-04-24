@@ -288,7 +288,9 @@
     <button class="nav-btn" data-tab="medicos"><span class="material-symbols-rounded icon">stethoscope</span>Médicos</button>
     <button class="nav-btn" data-tab="oncall"><span class="material-symbols-rounded icon">emergency</span>Oncall</button>
     <button class="nav-btn" data-tab="telefones"><span class="material-symbols-rounded icon">contact_phone</span>Lista</button>
+    
     <button class="nav-btn" data-tab="formularios"><span class="material-symbols-rounded icon">folder_open</span>QCI</button>
+
     <button id="nav-pedidos" class="nav-btn" data-tab="pedidos"><span class="material-symbols-rounded icon">sync_alt</span>Trocas</button>
     <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="material-symbols-rounded icon">settings</span>Gestão</button>
   </nav>
@@ -340,7 +342,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc, or } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
   const firebaseConfig = {
@@ -450,16 +452,32 @@
       else sessionStorage.setItem('notif_session_dismissed', 'true'); 
       document.getElementById("modal-notificacoes").classList.add("hidden");
   };
+  document.getElementById("header-bell").onclick = async () => {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === "default") await pedirNotificacoes();
+      else if (Notification.permission === "denied") alert("As notificações estão bloqueadas. Toque no Cadeado na barra de endereço para ativar.");
+      else alert("As suas notificações já estão ativas!");
+  };
 
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
     if (!rawUrl) { wrapper.innerHTML = "<div class='empty-state'><span class='material-symbols-rounded'>description</span>Documento não disponível.</div>"; return; }
-    let url = rawUrl.includes("src=") ? rawUrl.match(/src=["']([^"']+)["']/)[1] : rawUrl.replace(/^["']/, '').split(/["'\s]/)[0].trim();
+    
+    let url = rawUrl;
+    if (url.includes("src=")) { 
+        const match = url.match(/src=["']([^"']+)["']/); 
+        if (match) url = match[1]; 
+    } else { 
+        url = url.replace(/^["']/, '').split(/["'\s]/)[0]; 
+    }
+    
+    url = url.trim();
     let embedUrl = url.split('?')[0] + "?action=embedview";
     let dlUrl = url.split('?')[0] + "?download=1";
+
     const btnDl = document.getElementById(dlId);
-    if (btnDl) { btnDl.href = dlUrl; }
+    if (btnDl) { btnDl.href = dlUrl; btnDl.setAttribute("target", "_blank"); }
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
 
@@ -476,12 +494,17 @@
           document.getElementById("nav-gestao").classList.remove("hidden");
           document.getElementById("btn-novo-aviso").classList.remove("hidden");
           carregarGestao();
+      } else {
+          document.getElementById("admin-tag").classList.add("hidden");
+          document.getElementById("nav-gestao").classList.add("hidden");
+          document.getElementById("btn-novo-aviso").classList.add("hidden");
       }
 
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) { 
           userRole = p.data().role; 
           if (userRole === 'recepcao') document.getElementById("nav-pedidos").classList.add("hidden");
+          else document.getElementById("nav-pedidos").classList.remove("hidden");
           carregarColegasRole(); 
       }
       setTimeout(gerirAvisoNotificacoes, 1000); 
@@ -494,41 +517,75 @@
           setViewer("div-oncall", "dl-oncall", linksDB.oncall);
           setViewer("div-tel", "dl-tel", linksDB["lista telefonica"]); 
 
+          // --- MOTOR INTELIGENTE DE FORMULÁRIOS QCI ---
           const formsDiv = document.getElementById("lista-formularios");
           formsDiv.innerHTML = "";
           let hasForms = false;
-          Object.keys(linksDB).sort().forEach(key => {
-              if (key.toLowerCase().startsWith("qci")) {
+          
+          const chavesOrdenadas = Object.keys(linksDB).sort();
+          
+          for (const key of chavesOrdenadas) {
+              const lowerKey = key.toLowerCase();
+              if (lowerKey.startsWith("qci_") || lowerKey.startsWith("qci ")) {
                   hasForms = true;
-                  let words = key.replace(/^qci[_\s]*/i, '').replace(/_/g, " ").split(' ');
+                  
+                  // Limpa prefixos e troca underscores
+                  let wordsRaw = key.replace(/^qci[_\s]*/i, '').replace(/_/g, " ");
+                  
                   const siglas = ['RM', 'TC', 'MM', 'BAAF', 'QCI', 'EKG', 'RX'];
                   const ligacoes = ['de', 'da', 'do', 'por', 'e', 'ou', 'com', 'para'];
-                  let formName = words.map((w, i) => {
-                      let up = w.toUpperCase(); let lo = w.toLowerCase();
-                      if(siglas.includes(up)) return up;
-                      if(ligacoes.includes(lo) && i !== 0) return lo;
-                      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+
+                  let formName = wordsRaw.split(' ').map((word, index) => {
+                      let trimW = word.trim();
+                      if(!trimW) return "";
+                      let upperW = trimW.toUpperCase();
+                      let lowerW = trimW.toLowerCase();
+                      
+                      if(siglas.includes(upperW)) return upperW;
+                      if(ligacoes.includes(lowerW) && index !== 0) return lowerW;
+                      return trimW.charAt(0).toUpperCase() + trimW.slice(1).toLowerCase();
                   }).join(' ').trim();
                   
+                  formName = formName.charAt(0).toUpperCase() + formName.slice(1);
+                  
                   let rawUrl = linksDB[key];
-                  let dlUrl = rawUrl.includes("src=") ? rawUrl.match(/src=["']([^"']+)["']/)[1] : rawUrl.replace(/^["']/, '').split(/["'\s]/)[0].trim();
-                  dlUrl = dlUrl.includes("onedrive.live.com/embed") ? dlUrl.replace("/embed", "/download") : (dlUrl.includes("?") ? dlUrl + "&download=1" : dlUrl + "?download=1");
+                  let dlUrl = rawUrl;
+
+                  if (rawUrl.includes("src=")) {
+                      const match = rawUrl.match(/src=["']([^"']+)["']/);
+                      if (match) dlUrl = match[1];
+                  } else {
+                      dlUrl = rawUrl.replace(/^["']/, '').split(/["'\s]/)[0];
+                  }
+
+                  dlUrl = dlUrl.trim();
+                  
+                  // CORREÇÃO: Transforma link de embed em link de DOWNLOAD DIRETO (OneDrive)
+                  if(dlUrl.includes("onedrive.live.com/embed")) {
+                      dlUrl = dlUrl.replace("/embed", "/download");
+                  } else {
+                      if(!dlUrl.includes("?")) dlUrl += "?download=1";
+                      else if(!dlUrl.includes("download=1")) dlUrl += "&download=1";
+                  }
 
                   formsDiv.innerHTML += `
-                      <div class="card" style="border-left-color: var(--primary); display:flex; align-items:center; justify-content:space-between;">
-                          <div style="display:flex; align-items:center; gap:10px; flex: 1;">
+                      <div class="card" style="border-left-color: var(--primary); display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; margin-bottom: 10px;">
+                          <div style="display:flex; align-items:center; gap:10px; flex: 1; padding-right: 10px;">
                               <span class="material-symbols-rounded" style="color:var(--primary); font-size:24px;">description</span>
-                              <strong style="font-size:13px;">${formName}</strong>
+                              <strong style="font-size:13px; color:var(--text-main); word-break: break-word;">${formName}</strong>
                           </div>
-                          <a href="${dlUrl}" target="_blank" download class="btn-main" style="margin:0; padding:8px 14px; width:auto; font-size:12px;">Download</a>
-                      </div>`;
+                          <a href="${dlUrl}" target="_blank" download class="btn-main" style="margin:0; padding:8px 14px; width:auto; border-radius:8px; font-size:12px; display:flex; align-items:center; gap:6px; flex-shrink: 0;"><span class="material-symbols-rounded" style="font-size:16px;">download</span> Download</a>
+                      </div>
+                  `;
               }
-          });
-          if(!hasForms) formsDiv.innerHTML = "<div class='empty-state'>Nenhum formulário carregado.</div>";
+          }
+          if(!hasForms) formsDiv.innerHTML = "<div class='empty-state'><span class='material-symbols-rounded'>folder_off</span>Nenhum formulário carregado.</div>";
         }
       });
+
       carregarAvisos();
       carregarMeusPedidos();
+
     } else {
       document.getElementById("app-screen").classList.add("hidden");
       document.getElementById("login-screen").classList.remove("hidden");
@@ -539,46 +596,82 @@
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? `<div class='empty-state'>Nenhum pedido pendente.</div>` : "";
+        div.innerHTML = snap.empty ? `<div class='empty-state'><span class='material-symbols-rounded'>task</span>Nenhum pedido em estado pendente.</div>` : "";
         snap.forEach(d => {
             const p = d.data(); const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Agora";
             const card = document.createElement("div"); card.className = `card card-${p.status}`;
-            card.innerHTML = `<div class="pedido-header"><span class="material-symbols-rounded">person</span> ${p.nome} -> ${p.colega_nome}</div>
-                <div class="pedido-corpo"><strong>${p.meuTurno}</strong> -> <strong>${p.turnoPretendido}</strong></div>
-                ${p.descricao ? `<div class="pedido-obs"><span>${p.descricao}</span></div>` : ""}
-                <div class="pedido-footer"><span>${dataStr}</span><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>
+            card.innerHTML = `<div class="pedido-header"><span class="material-symbols-rounded">person</span> ${p.nome} <span class="material-symbols-rounded" style="color:var(--text-muted); font-size: 14px;">arrow_forward</span> ${p.colega_nome}</div>
+                <div class="pedido-corpo"><span class="material-symbols-rounded">update</span> <strong>${p.meuTurno}</strong> <span class="material-symbols-rounded" style="color:var(--text-muted);">sync_alt</span> <strong>${p.turnoPretendido}</strong></div>
+                ${p.descricao ? `<div class="pedido-obs"><span class="material-symbols-rounded">chat</span> <span>${p.descricao}</span></div>` : ""}
+                <div class="pedido-footer"><span style="display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size: 14px;">calendar_today</span> ${dataStr}</span><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>
                 ${p.status === 'pendente' ? `<div style="display:flex; gap:10px; margin-top:12px;">
-                    <button onclick="window.decidir(this, '${d.id}', 'aprovado')" style="flex:1; padding:8px; background:#d1e7dd; color:#0f5132; border-radius:8px; font-weight:bold; cursor:pointer;">APROVAR</button>
-                    <button onclick="window.decidir(this, '${d.id}', 'reprovado')" style="flex:1; padding:8px; background:#f8d7da; color:#842029; border-radius:8px; font-weight:bold; cursor:pointer;">REPROVAR</button>
+                    <button onclick="window.decidir(this, '${d.id}', 'aprovado')" style="flex:1; padding:8px; border:none; background:#d1e7dd; color:#0f5132; border-radius:8px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;"><span class="material-symbols-rounded" style="font-size:16px;">thumb_up</span> APROVAR</button>
+                    <button onclick="window.decidir(this, '${d.id}', 'reprovado')" style="flex:1; padding:8px; border:none; background:#f8d7da; color:#842029; border-radius:8px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;"><span class="material-symbols-rounded" style="font-size:16px;">thumb_down</span> REPROVAR</button>
                 </div>` : ""}`;
             div.appendChild(card);
         });
     });
   }
 
+  document.querySelectorAll(".btn-filter").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("active")); btn.classList.add("active"); filtroGestao = btn.dataset.f; carregarGestao(); }); });
+
   window.decidir = async (btn, id, s) => { 
       if(confirm(`Confirmar ação: ${s.toUpperCase()}?`)) {
           btn.disabled = true; await updateDoc(doc(db, "Pedidos", id), { status: s });
           getDoc(doc(db, "Pedidos", id)).then(p => { 
-            if(p.exists()) fetch(`${API_BASE}/status`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: p.data().email, status: s }) }).catch(e => {}); 
+            if(p.exists()) {
+              // Notifica o autor do pedido sobre a decisão da coordenação
+              fetch(`${API_BASE}/status`, { 
+                method: "POST", 
+                headers: { "Content-Type": "application/json" }, 
+                body: JSON.stringify({ email: p.data().email, status: s }) 
+              }).catch(e => {}); 
+            }
           });
       }
   };
 
   function carregarMeusPedidos() {
-    const q = query(collection(db, "Pedidos"), or(where("uid", "==", currentUser.uid), where("colega_email", "==", currentUser.email)), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
+    // Escuta todos os pedidos do serviço para filtrar localmente
+    const q = query(collection(db, "Pedidos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("meus-pedidos");
-        div.innerHTML = snap.empty ? "<div class='empty-state'>Nenhum pedido recente.</div>" : "";
+        div.innerHTML = "";
+        let temPedidos = false;
+
         snap.forEach(d => {
-            const p = d.data(); const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Recente";
-            const isEuDestino = p.colega_email === currentUser.email;
-            div.innerHTML += `<div class="card card-${p.status}">
-                    <div class="pedido-header"><span class="material-symbols-rounded">person</span> ${isEuDestino ? 'De: ' + p.nome : 'Para: ' + p.colega_nome}</div>
-                    <div class="pedido-corpo"><strong>${p.meuTurno}</strong> -> <strong>${p.turnoPretendido}</strong></div>
-                    <div class="pedido-footer"><span>${dataStr}</span><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>
-                </div>`;
+            const p = d.data();
+            // Verifica se eu sou o autor OU o destinatário da troca
+            if (p.email === currentUser.email || p.colega_email === currentUser.email) {
+                temPedidos = true;
+                const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Recente";
+                const souEuOAutor = p.email === currentUser.email;
+
+                div.innerHTML += `
+                    <div class="card card-${p.status}">
+                        <div class="pedido-header">
+                            <span class="material-symbols-rounded">person</span> 
+                            ${souEuOAutor ? `Para: ${p.colega_nome}` : `De: ${p.nome}`}
+                        </div>
+                        <div class="pedido-corpo">
+                            <span class="material-symbols-rounded">update</span> 
+                            <strong>${p.meuTurno}</strong> 
+                            <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:14px;">arrow_forward</span> 
+                            <strong>${p.turnoPretendido}</strong>
+                        </div>
+                        <div class="pedido-footer">
+                            <span style="display:flex; align-items:center; gap:4px;">
+                                <span class="material-symbols-rounded" style="font-size:14px;">calendar_today</span> ${dataStr}
+                            </span>
+                            <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
+                        </div>
+                    </div>`;
+            }
         });
+
+        if (!temPedidos) {
+            div.innerHTML = "<div class='empty-state'><span class='material-symbols-rounded'>inbox</span>Nenhum pedido encontrado.</div>";
+        }
     });
   }
 
@@ -590,70 +683,143 @@
       snap.forEach(d => { if (d.data().email !== currentUser.email) { const opt = document.createElement("option"); opt.value = d.data().email; opt.dataset.nome = d.data().nome; opt.textContent = d.data().nome; sel.appendChild(opt); } });
   }
 
+  const formatarParaDB = (data, periodo) => { if(!data) return periodo; const d = new Date(data + "T00:00:00"); return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo; };
+
   document.getElementById("btn-enviar-pedido").onclick = async function() {
+      const btn = this; const msg = document.getElementById("pedido-msg");
       const colega = document.getElementById("p-colega-select");
       const meuD = document.getElementById("p-meu-data").value; const meuP = document.getElementById("p-meu-periodo").value;
       const pretD = document.getElementById("p-pret-data").value; const pretP = document.getElementById("p-pret-periodo").value;
       const obs = document.getElementById("p-motivo").value;
-      if(!colega.value || !meuD || !pretD || !meuP || !pretP) return;
-      const meuTurnoFinal = new Date(meuD + "T00:00:00").toLocaleDateString("pt-PT") + ", " + meuP;
-      const turnoPretendidoFinal = new Date(pretD + "T00:00:00").toLocaleDateString("pt-PT") + ", " + pretP;
-      const docRef = await addDoc(collection(db, "Pedidos"), { uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email, meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome, descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp() });
-      emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
-      fetch(`${API_BASE}/pedido`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value }) }).catch(e => {});
-      alert("Pedido enviado!");
+      
+      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { msg.innerHTML = "<span class='material-symbols-rounded' style='color:#e74c3c;'>error</span> <span style='color:#e74c3c;'>Preencha todas as datas.</span>"; return; }
+
+      btn.disabled = true; btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A aguardar...";
+      try {
+          const meuTurnoFinal = formatarParaDB(meuD, meuP); const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
+          const docRef = await addDoc(collection(db, "Pedidos"), { 
+            uid: currentUser.uid, 
+            nome: currentUser.email.split("@")[0], 
+            email: currentUser.email, 
+            meuTurno: meuTurnoFinal, 
+            turnoPretendido: turnoPretendidoFinal, 
+            colega_email: colega.value, 
+            colega_nome: colega.options[colega.selectedIndex].dataset.nome, 
+            descricao: obs, 
+            status: "pendente", 
+            role: userRole, 
+            createdAt: serverTimestamp() 
+          });
+          
+          msg.innerHTML = "<span class='material-symbols-rounded' style='color:var(--primary);'>check_circle</span> <span style='color:var(--primary); font-weight:bold;'>Pedido registado!</span>";
+          document.getElementById("p-meu-periodo").value = ""; document.getElementById("p-pret-periodo").value = ""; document.getElementById("p-motivo").value = "";
+          btn.disabled = false; btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>send</span> Enviar Pedido";
+
+          // Envia e-mail via EmailJS
+          emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
+          
+          // Envia notificação PUSH para o colega
+          fetch(`${API_BASE}/pedido`, { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value }) 
+          }).catch(e => {});
+
+      } catch(e) { msg.innerHTML = "<span class='material-symbols-rounded' style='color:#e74c3c;'>cloud_off</span> <span style='color:#e74c3c;'>Erro na comunicação.</span>"; btn.disabled = false; btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>send</span> Enviar Pedido"; }
   };
 
   function carregarAvisos() {
     const q = query(collection(db, "Avisos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-avisos");
-        div.innerHTML = snap.empty ? `<div class='empty-state'>Sem avisos recentes.</div>` : "";
+        div.innerHTML = snap.empty ? `<div class='empty-state'><span class='material-symbols-rounded'>campaign</span>Sem avisos recentes.</div>` : "";
         snap.forEach(d => {
             const a = d.data(); const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
-            const card = document.createElement("div"); card.className = "card";
+            const card = document.createElement("div"); card.className = "card"; card.style.borderLeftColor = "var(--primary)";
+            
             card.innerHTML = `
-                <div class="aviso-item-header"><span class="aviso-item-autor">${a.autor}</span><span>${dataAviso}</span></div>
-                <div style="margin:12px 0; white-space:pre-wrap;">${a.texto}</div>
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <button id="btn-conf-${d.id}" onclick="window.confirmarLeitura(this, '${d.id}')" class="aviso-item-btn">Confirmar</button>
-                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" class="aviso-item-btn-text"><span id="count-${d.id}">0</span> Lidos</button>` : ""}
+                <div class="aviso-item-header"><span class="aviso-item-autor"><span class="material-symbols-rounded">person</span> ${a.autor}</span><span class="aviso-item-data"><span class="material-symbols-rounded" style="font-size: 14px;">calendar_today</span> ${dataAviso}</span></div>
+                <div style="font-size:14px; margin:12px 0; white-space:pre-wrap;">${a.texto}</div>
+                <div style="display:flex; gap:15px; align-items:center; margin-top:10px;">
+                    <button id="btn-conf-${d.id}" onclick="window.confirmarLeitura(this, '${d.id}')" class="aviso-item-btn"><span class="material-symbols-rounded" style="font-size:16px;">check_circle</span> Confirmar</button>
+                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" class="aviso-item-btn-text" style="color:var(--secondary);"><span class="material-symbols-rounded" style="font-size:16px;">visibility</span> <span id="count-${d.id}">0</span> Confirmados</button>` : ""}
+                    ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" class="aviso-item-btn-text" style="color:#e74c3c;"><span class="material-symbols-rounded" style="font-size:20px;">delete</span></button>` : ""}
                 </div>`;
             div.appendChild(card);
-            getDoc(doc(db, "Avisos", d.id, "acknowledgements", currentUser.uid)).then(ack => { if(ack.exists()) document.getElementById(`btn-conf-${d.id}`).innerText = "Lido"; });
-            if(isAdmin) onSnapshot(collection(db, "Avisos", d.id, "acknowledgements"), s => document.getElementById(`count-${d.id}`).innerText = s.size);
+
+            getDoc(doc(db, "Avisos", d.id, "acknowledgements", currentUser.uid)).then(ack => {
+                if(ack.exists()) {
+                    const btn = document.getElementById(`btn-conf-${d.id}`);
+                    if(btn) { btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Lido`; btn.disabled = true; btn.style.borderColor = "var(--border)"; btn.style.color = "var(--text-muted)"; btn.style.cursor = "default"; }
+                }
+            });
+
+            if(isAdmin) {
+                onSnapshot(collection(db, "Avisos", d.id, "acknowledgements"), (ackSnap) => {
+                    const countSpan = document.getElementById(`count-${d.id}`);
+                    if (countSpan) countSpan.innerText = ackSnap.size;
+                });
+            }
         });
     });
   }
 
   window.confirmarLeitura = async (btn, id) => {
+      btn.disabled = true; btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">hourglass_empty</span> ...`;
       await setDoc(doc(db, "Avisos", id, "acknowledgements", currentUser.uid), { nome: currentUser.email, data: serverTimestamp() }); 
-      btn.innerText = "Lido"; btn.disabled = true;
+      btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Lido`; btn.style.borderColor = "var(--border)"; btn.style.color = "var(--text-muted)"; btn.style.cursor = "default";
   };
 
   document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
-  document.getElementById("btn-publicar").addEventListener("click", async () => {
-      const txt = document.getElementById("aviso-texto").value; if(!txt) return;
+  document.getElementById("btn-publicar").addEventListener("click", async function() {
+      const btn = this; const txt = document.getElementById("aviso-texto").value;
+      if(!txt) return;
+      btn.disabled = true;
       await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
-      document.getElementById("modal-aviso").classList.add("hidden");
-      fetch(`${API_BASE}/aviso`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ titulo: "Novo Aviso", texto: txt }) }).catch(e => {});
+      document.getElementById("modal-aviso").classList.add("hidden"); document.getElementById("aviso-texto").value = ""; btn.disabled = false;
+      fetch(`${API_BASE}/aviso`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt }) }).catch(e => {});
   });
 
+  window.verQuemViu = async (id) => {
+      const snap = await getDocs(collection(db, "Avisos", id, "acknowledgements"));
+      const lista = document.getElementById("lista-vistos");
+      lista.innerHTML = snap.empty ? "<p style='color:var(--text-muted); display:flex; align-items:center; gap:6px;'><span class='material-symbols-rounded'>info</span> Ninguém confirmou ainda.</p>" : "";
+      snap.forEach(d => { lista.innerHTML += `<div style='padding:5px 0; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:6px;'><span class='material-symbols-rounded' style='font-size:14px; color:var(--primary);'>check</span> ${d.data().nome}</div>`; });
+      document.getElementById("modal-vistos").classList.remove("hidden");
+  };
+
+  window.apagarAviso = async (id) => { if(confirm("Tem a certeza que quer apagar este aviso?")) await deleteDoc(doc(db, "Avisos", id)); };
+
   document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.onclick = () => {
+      btn.addEventListener("click", () => {
           document.querySelectorAll(".tab-content").forEach(t => t.classList.add("hidden"));
           document.querySelectorAll(".nav-btn").forEach(n => n.classList.remove("active"));
           document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
           btn.classList.add("active");
-      };
+      });
   });
 
+  const updateVisual = (a, i) => { a.classList.replace('inactive', 'active'); i.classList.replace('active', 'inactive'); };
+  document.getElementById("btn-tec-atual").onclick = () => { updateVisual(document.getElementById("btn-tec-atual"), document.getElementById("btn-tec-prox")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_atual); };
+  document.getElementById("btn-tec-prox").onclick = () => { updateVisual(document.getElementById("btn-tec-prox"), document.getElementById("btn-tec-atual")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_proximo); };
+  document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "dl-med", linksDB.horario_medicos_atual); };
+  document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "dl-med", linksDB.horario_medicos_proximo); };
+
   document.getElementById("btn-login").onclick = async () => {
+      const btn = document.getElementById("btn-login"); const err = document.getElementById("login-error");
       const u = document.getElementById("login-email").value.trim(); const p = document.getElementById("login-pass").value;
-      if(!u || !p) return;
-      try { await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", p); } catch(e) { document.getElementById("login-error").innerText = "Acesso negado."; }
+      if(!u || !p) { err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Preencha todos os campos."; return; }
+      btn.disabled = true; btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A verificar..."; err.innerHTML = "";
+      try { await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", p); } catch(e) { err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Credenciais inválidas."; btn.disabled = false; btn.innerHTML = "<span class='material-symbols-rounded'>login</span> ENTRAR"; }
   };
-  document.getElementById("btn-logout").onclick = () => signOut(auth).then(() => window.location.reload());
+
+  document.getElementById("btn-forgot").onclick = () => {
+      const email = document.getElementById("login-email").value.trim();
+      if(!email || !email.includes("@")) { alert("Por favor, digite o seu e-mail na caixa acima e clique novamente em 'Esqueci-me da password'."); return; }
+      sendPasswordResetEmail(auth, email).then(() => alert("Link enviado! Verifique o seu email para redefinir a palavra-passe.")).catch(err => alert("Erro ao enviar email. Verifique o endereço."));
+  };
+  
+  document.getElementById("btn-logout").onclick = () => { signOut(auth).then(() => window.location.reload()); };
 </script>
 </body>
 </html>
