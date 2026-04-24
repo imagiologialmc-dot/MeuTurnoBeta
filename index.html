@@ -13,65 +13,97 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
 
   <style>
-    :root { --primary: #2AA8A8; --secondary: #2D6E8E; --bg: #f0f4f7; --white: #ffffff; }
+    /* VARIÁVEIS BASE (MODO CLARO) */
+    :root { 
+      --primary: #2AA8A8; 
+      --secondary: #2D6E8E; 
+      --bg: #f0f4f7; 
+      --white: #ffffff; 
+      --text-main: #333333;
+      --text-muted: #666666;
+      --border: #dddddd;
+      --card-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+
+    /* MODO ESCURO AUTOMÁTICO (DARK MODE) 🌙 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --white: #1e1e1e;
+        --text-main: #e0e0e0;
+        --text-muted: #aaaaaa;
+        --border: #333333;
+        --card-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      }
+      .login-box input, .form-card input, .form-card select, .form-card textarea {
+        background: #2c2c2c !important; color: white !important; border-color: #444 !important;
+      }
+      .pedido-obs { background: #2a2a2a !important; }
+      .viewer-actions { background: #252525 !important; border-bottom: 1px solid #333 !important; }
+      .btn-action { color: #64B5F6 !important; }
+      .btn-action:hover { background: #333 !important; }
+      .btn-filter { background: #2c2c2c !important; border-color: #444 !important; color: #ccc !important; }
+      .nav-btn { color: #777 !important; }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: #333; overflow-x: hidden; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
     .hidden { display: none !important; }
     
+    /* LOGIN */
     #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); overflow: hidden; }
     .logo-anim-container { position: relative; width: 280px; height: 150px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
     .logo-clinic { position: absolute; width: 240px; height: auto; object-fit: contain; animation: clinicPulse 3.5s forwards; }
     .logo-app { position: absolute; width: 130px; height: 130px; border-radius: 32px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.3); opacity: 0; animation: appFadeIn 3.5s forwards; }
     
-    @keyframes clinicPulse {
-      0% { opacity: 0; transform: scale(0.9); } 15% { opacity: 1; transform: scale(1); } 35% { opacity: 1; transform: scale(1.05); } 60% { opacity: 1; transform: scale(1.05); } 80% { opacity: 0; transform: scale(0.9); } 100% { opacity: 0; transform: scale(0.9); visibility: hidden; }
-    }
-    @keyframes appFadeIn {
-      0% { opacity: 0; transform: scale(0.5); } 75% { opacity: 0; transform: scale(0.5); } 90% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); }
-    }
+    @keyframes clinicPulse { 0% { opacity: 0; transform: scale(0.9); } 15% { opacity: 1; transform: scale(1); } 35% { opacity: 1; transform: scale(1.05); } 60% { opacity: 1; transform: scale(1.05); } 80% { opacity: 0; transform: scale(0.9); } 100% { opacity: 0; transform: scale(0.9); visibility: hidden; } }
+    @keyframes appFadeIn { 0% { opacity: 0; transform: scale(0.5); } 75% { opacity: 0; transform: scale(0.5); } 90% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
     
     .login-form-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: formEntry 1s forwards 2.8s; }
     @keyframes formEntry { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
     .login-box { background: var(--white); border-radius: 20px; padding: 30px 25px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.15); text-align: center; }
-    .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid #eee; outline: none; text-align: left; font-size: 15px; }
+    .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid var(--border); outline: none; text-align: left; font-size: 15px; background: var(--bg); color: var(--text-main); }
     .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
-    .btn-main:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
+    .btn-main:disabled { background: #888; cursor: not-allowed; opacity: 0.7; }
+    #btn-forgot { margin-top: 15px; font-size: 13px; color: rgba(255,255,255,0.9); text-decoration: underline; cursor: pointer; display: inline-block; }
 
+    /* HEADER */
     .app-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     .btn-logout { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; }
 
+    /* CONTEÚDO TABS */
     .tab-content { padding: 12px; padding-bottom: 90px; }
-    .section-title { font-size: 18px; font-weight: 700; color: var(--secondary); margin: 15px 0; display: flex; align-items: center; gap: 8px; }
+    .section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin: 15px 0; display: flex; align-items: center; gap: 8px; }
 
+    /* BOTÕES MÊS & FILTROS */
     .toggle-container { display: flex; gap: 8px; margin-bottom: 15px; }
     .btn-toggle { flex: 1; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: 2px solid var(--primary); }
     .btn-toggle.active { background: var(--primary); color: white; }
-    .btn-toggle.inactive { background: white; color: var(--primary); }
+    .btn-toggle.inactive { background: var(--white); color: var(--primary); }
 
     .filter-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-    .btn-filter { padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid #ccc; background: white; color: #666; white-space: nowrap; transition: 0.2s; }
+    .btn-filter { padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); white-space: nowrap; transition: 0.2s; }
     .btn-filter.active[data-f="pendente"] { background: #fff3cd; color: #856404; border-color: #ffeeba; }
     .btn-filter.active[data-f="aprovado"] { background: #2AA8A8; color: white; border-color: #2AA8A8; }
     .btn-filter.active[data-f="reprovado"] { background: #f8d7da; color: #842029; border-color: #f5c6cb; }
 
-    .viewer-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; }
-    .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid #ddd; }
+    /* CARDS */
+    .viewer-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 16px; border: 1px solid var(--border); }
+    .viewer-actions { display: flex; background: #eef4ff; border-bottom: 1px solid var(--border); }
     .btn-action { flex: 1; padding: 14px; text-align: center; text-decoration: none; color: #2457c5; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
-    .btn-action:hover { background: #dce7ff; }
     iframe { width: 100%; height: calc(100svh - 270px); min-height: 400px; border: none; display: block; background: #fff; }
 
-    .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 16px; border-left: 4px solid var(--primary); text-align: left; }
+    .form-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 16px; border-left: 4px solid var(--primary); text-align: left; }
     .form-group { margin-bottom: 15px; }
-    .form-label { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 8px; display: block; }
-    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #fff; }
+    .form-label { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: block; }
+    .form-card input, .form-card select, .form-card textarea { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid var(--border); outline: none; font-size: 14px; background: var(--bg); color: var(--text-main); }
     .form-card textarea { resize: none; min-height: 80px; }
 
-    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #ddd; text-align: left; }
-    .pedido-header { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
-    .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: #333; }
-    .pedido-obs { font-size: 12px; color: #666; font-style: italic; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 8px; }
-    .pedido-footer { font-size: 11px; color: #aaa; display: flex; justify-content: space-between; align-items: center; }
+    .card { background: var(--white); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: var(--card-shadow); border-left: 4px solid var(--border); text-align: left; }
+    .pedido-header { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .pedido-corpo { font-size: 14px; margin-bottom: 8px; }
+    .pedido-obs { font-size: 12px; color: var(--text-muted); font-style: italic; background: var(--bg); padding: 8px; border-radius: 6px; margin-bottom: 8px; }
     
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: #2AA8A8; }
@@ -82,13 +114,15 @@
     .status-aprovado { background: #d1e7dd; color: #0f5132; }
     .status-reprovado { background: #f8d7da; color: #842029; }
 
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #e0e0e0; z-index: 100; overflow-x: auto; padding-bottom: env(safe-area-inset-bottom); }
-    .nav-btn { flex: 1; min-width: 62px; padding: 10px 2px 8px 2px; border: none; background: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
+    /* NAVEGAÇÃO */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; border-top: 1px solid var(--border); z-index: 100; overflow-x: auto; padding-bottom: env(safe-area-inset-bottom); }
+    .nav-btn { flex: 1; min-width: 62px; padding: 10px 2px 8px 2px; border: none; background: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
     .nav-btn .icon { font-size: 24px; transition: transform 0.2s; font-variation-settings: 'FILL' 0; }
     .nav-btn.active { color: var(--primary); font-weight: 700; }
     .nav-btn.active .icon { font-variation-settings: 'FILL' 1; transform: scale(1.1); }
 
-    .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+    /* MODAIS */
+    .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
   </style>
 </head>
 <body>
@@ -109,6 +143,7 @@
       <button class="btn-main" id="btn-login">ENTRAR</button>
       <div id="login-error" style="color:red; font-size:12px; margin-top:12px; font-weight:600;"></div>
     </div>
+    <a id="btn-forgot">Esqueci-me da password</a>
   </div>
 </div>
 
@@ -226,19 +261,19 @@
 
 <div id="modal-notificacoes" class="modal-overlay hidden">
     <div class="login-box">
-        <h3 style="color:var(--secondary); font-size:20px;">Ativar Alertas 🔔</h3>
-        <p style="font-size:14px; color:#555; margin:15px 0;">Para seres avisado(a) sempre que tiveres uma nova troca de turno ou aviso da coordenação, ativa as notificações.</p>
+        <h3 style="color:var(--primary); font-size:20px;">Ativar Alertas 🔔</h3>
+        <p style="font-size:14px; color:var(--text-muted); margin:15px 0;">Para seres avisado(a) sempre que tiveres uma nova troca de turno ou aviso da coordenação, ativa as notificações.</p>
         <button id="btn-ativar-notif" class="btn-main" style="margin-bottom:10px;">Ativar Notificações</button>
-        <button id="btn-mais-tarde" style="width:100%; padding:10px; background:none; border:none; color:#888; font-weight:bold; cursor:pointer;">Mais Tarde</button>
+        <button id="btn-mais-tarde" style="width:100%; padding:10px; background:none; border:none; color:var(--text-muted); font-weight:bold; cursor:pointer;">Mais Tarde</button>
     </div>
 </div>
 
 <div id="modal-aviso" class="modal-overlay hidden">
     <div class="login-box" style="text-align:left;">
-        <h3 style="color:var(--secondary); text-align:center;">Novo Aviso</h3>
-        <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid #ddd; resize:none;" placeholder="Escreva aqui..."></textarea>
+        <h3 style="color:var(--primary); text-align:center;">Novo Aviso</h3>
+        <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main); resize:none;" placeholder="Escreva aqui..."></textarea>
         <div style="display:flex; gap:10px;">
-            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold; cursor:pointer;">Cancelar</button>
+            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:#eee; font-weight:bold; cursor:pointer; color:#333;">Cancelar</button>
             <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;">Publicar</button>
         </div>
     </div>
@@ -246,7 +281,7 @@
 
 <div id="modal-vistos" class="modal-overlay hidden">
     <div class="login-box">
-        <h3 style="color:var(--secondary);">Confirmaram leitura:</h3>
+        <h3 style="color:var(--primary);">Confirmaram leitura:</h3>
         <div id="lista-vistos" style="max-height:250px; overflow:auto; margin:15px 0; font-size:14px; text-align:left;"></div>
         <button onclick="document.getElementById('modal-vistos').classList.add('hidden')" class="btn-main" style="margin-top:0;">Fechar</button>
     </div>
@@ -263,7 +298,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDoc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
@@ -287,16 +322,23 @@
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
 
+  // DATA LIMITE PARA HISTÓRICO (Últimos 60 Dias)
+  const limiteData = new Date();
+  limiteData.setDate(limiteData.getDate() - 60);
+
+  // --- MOTOR DE NOTIFICAÇÕES & OFFLINE ---
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./firebase-messaging-sw.js').catch(e => console.error("SW Erro:", e));
+  }
+
   function atualizarIconeSino() {
       const bell = document.getElementById("header-bell");
       if (!('Notification' in window)) { bell.style.display = 'none'; return; }
       
       if (Notification.permission === "granted") {
-          bell.innerText = "🔔";
-          bell.title = "Notificações Ativas";
+          bell.innerText = "🔔"; bell.title = "Notificações Ativas";
       } else {
-          bell.innerText = "🔕";
-          bell.title = "Notificações Desativadas";
+          bell.innerText = "🔕"; bell.title = "Notificações Desativadas";
       }
   }
 
@@ -306,13 +348,13 @@
       const perm = await Notification.requestPermission();
       atualizarIconeSino();
       if (perm === 'granted') {
-        const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+        const reg = await navigator.serviceWorker.ready;
         const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
         if (token) {
           await setDoc(doc(db, 'Utilizadores', currentUser.uid, 'tokens', token), { token: token, updatedAt: serverTimestamp() }, { merge: true });
         }
       } else if (perm === 'denied') {
-        alert("Bloqueou as notificações. Se mudar de ideias, vá às definições do browser ou toque no 'Cadeado' na barra de endereço.");
+        alert("Bloqueou as notificações. Vá às definições do browser ou toque no 'Cadeado' na barra de endereço para reverter.");
       }
     } catch(e) { console.error("Erro push:", e); }
   }
@@ -320,13 +362,10 @@
   function gerirAvisoNotificacoes() {
       if (!('Notification' in window)) return;
       atualizarIconeSino();
-
       if (Notification.permission === "default") {
           const lastAsked = localStorage.getItem('notif_last_asked');
           const now = new Date().getTime();
-          const waitTime = 3 * 24 * 60 * 60 * 1000;
-
-          if (!lastAsked || (now - parseInt(lastAsked)) > waitTime) {
+          if (!lastAsked || (now - parseInt(lastAsked)) > (3 * 24 * 60 * 60 * 1000)) {
               document.getElementById("modal-notificacoes").classList.remove("hidden");
           }
       } else if (Notification.permission === "granted") {
@@ -338,55 +377,40 @@
       document.getElementById("modal-notificacoes").classList.add("hidden");
       await pedirNotificacoes();
   };
-
   document.getElementById("btn-mais-tarde").onclick = () => {
       localStorage.setItem('notif_last_asked', new Date().getTime());
       document.getElementById("modal-notificacoes").classList.add("hidden");
   };
-
   document.getElementById("header-bell").onclick = async () => {
       if (!('Notification' in window)) return;
-      if (Notification.permission === "default") {
-          await pedirNotificacoes();
-      } else if (Notification.permission === "denied") {
-          alert("⚠️ As notificações estão bloqueadas nas configurações do seu telemóvel/browser.\n\nPara ativar: Toque no ícone de Cadeado (🔒) na barra de endereço lá em cima, vá a Permissões e permita as Notificações.");
-      } else {
-          alert("✅ As suas notificações já estão ativas e configuradas!");
-      }
+      if (Notification.permission === "default") await pedirNotificacoes();
+      else if (Notification.permission === "denied") alert("⚠️ Notificações bloqueadas. Toque no Cadeado (🔒) na barra de endereço para ativar.");
+      else alert("✅ As suas notificações já estão ativas!");
   };
 
+  // --- VISUALIZADOR DE DOCUMENTOS ---
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
-    
-    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:30px; color:#aaa; text-align:center;'>Documento não disponível.</p>"; return; }
-    
+    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:30px; color:var(--text-muted); text-align:center;'>Documento não disponível.</p>"; return; }
     let url = rawUrl;
-    if (url.includes("src=")) {
-        const match = url.match(/src=["']([^"']+)["']/);
-        if (match) url = match[1];
-    } else {
-        url = url.split('"')[0].split(' ')[0];
-    }
+    if (url.includes("src=")) { const match = url.match(/src=["']([^"']+)["']/); if (match) url = match[1]; } 
+    else { url = url.split('"')[0].split(' ')[0]; }
     url = url.trim();
 
     let embedUrl = url.split('?')[0] + "?action=embedview";
     let dlUrl = url.split('?')[0] + "?download=1";
 
     const btnDl = document.getElementById(dlId);
-    if (btnDl) { 
-        btnDl.href = dlUrl;
-        btnDl.setAttribute("target", "_blank"); 
-    }
-
+    if (btnDl) { btnDl.href = dlUrl; btnDl.setAttribute("target", "_blank"); }
     wrapper.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
   }
 
+  // --- INICIALIZAÇÃO ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       isAdmin = ADMINS.includes(user.email);
-      
       document.getElementById("login-screen").classList.add("hidden");
       document.getElementById("app-screen").classList.remove("hidden");
       document.getElementById("header-nome").textContent = user.email.split("@")[0];
@@ -417,7 +441,6 @@
 
       carregarAvisos();
       carregarMeusPedidos();
-      
       setTimeout(gerirAvisoNotificacoes, 2000); 
 
     } else {
@@ -426,28 +449,23 @@
     }
   });
 
+  // --- FUNÇÕES DE INTERFACE ---
   function carregarGestao() {
-    const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), orderBy("createdAt", "desc"));
+    // Busca pedidos recentes (últimos 60 dias) com base no filtro
+    const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? `<p style='padding:20px; color:#aaa; text-align:center;'>Sem pedidos em estado ${filtroGestao}.</p>` : "";
-        
+        div.innerHTML = snap.empty ? `<p style='padding:20px; color:var(--text-muted); text-align:center;'>Nenhum registo recente encontrado.</p>` : "";
         snap.forEach(d => {
             const p = d.data();
             const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Agora";
-            const card = document.createElement("div");
-            card.className = `card card-${p.status}`;
-            
+            const card = document.createElement("div"); card.className = `card card-${p.status}`;
             card.innerHTML = `
                 <div class="pedido-header">👤 ${p.nome} ➡️ ${p.colega_nome}</div>
-                <div style="font-size:14px; margin-bottom:8px; color:#333;">🔄 <strong>${p.meuTurno}</strong> <span style="color:#aaa;">↔️</span> <strong>${p.turnoPretendido}</strong></div>
-                ${p.descricao ? `<div style="font-size:12px; color:#666; font-style:italic; background:#f9f9f9; padding:8px; border-radius:6px; margin-bottom:8px;">💬 ${p.descricao}</div>` : ""}
-                <div style="font-size:11px; color:#aaa; display:flex; justify-content:space-between; align-items:center;">
-                    <span>📅 ${dataStr}</span>
-                    <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
-                </div>
-                ${p.status === 'pendente' ? `
-                <div style="display:flex; gap:10px; margin-top:12px;">
+                <div class="pedido-corpo">🔄 <strong>${p.meuTurno}</strong> <span style="color:var(--text-muted);">↔️</span> <strong>${p.turnoPretendido}</strong></div>
+                ${p.descricao ? `<div class="pedido-obs">💬 ${p.descricao}</div>` : ""}
+                <div class="pedido-footer"><span>📅 ${dataStr}</span><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>
+                ${p.status === 'pendente' ? `<div style="display:flex; gap:10px; margin-top:12px;">
                     <button onclick="window.decidir(this, '${d.id}', 'aprovado')" style="flex:1; padding:8px; border:none; background:#d1e7dd; color:#0f5132; border-radius:8px; font-weight:bold; cursor:pointer;">APROVAR</button>
                     <button onclick="window.decidir(this, '${d.id}', 'reprovado')" style="flex:1; padding:8px; border:none; background:#f8d7da; color:#842029; border-radius:8px; font-weight:bold; cursor:pointer;">REPROVAR</button>
                 </div>` : ""}
@@ -471,31 +489,25 @@
           btn.disabled = true;
           await updateDoc(doc(db, "Pedidos", id), { status: s });
           getDoc(doc(db, "Pedidos", id)).then(p => {
-              if(p.exists()) {
-                 fetch(`${API_BASE}/status`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email: p.data().email, status: s })
-                 }).catch(e => {});
-              }
+              if(p.exists()) fetch(`${API_BASE}/status`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: p.data().email, status: s }) }).catch(e => {});
           });
       }
   };
 
   function carregarMeusPedidos() {
-    onSnapshot(query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc")), snap => {
+    // Busca apenas o histórico recente do utilizador (últimos 60 dias)
+    const q = query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
+    onSnapshot(q, snap => {
         const div = document.getElementById("meus-pedidos");
-        div.innerHTML = snap.empty ? "<p style='font-size:13px; color:#aaa;'>Nenhum pedido efetuado.</p>" : "";
+        div.innerHTML = snap.empty ? "<p style='font-size:13px; color:var(--text-muted);'>Nenhum pedido efetuado recentemente.</p>" : "";
         snap.forEach(d => {
             const p = d.data();
             const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Recente";
             div.innerHTML += `
                 <div class="card card-${p.status}">
-                    <div style="font-size:13px; font-weight:700; color:var(--secondary); margin-bottom:6px;">Para: ${p.colega_nome}</div>
-                    <div style="font-size:14px; margin-bottom:8px; color:#333;">🔄 <strong>${p.meuTurno}</strong> ➡️ <strong>${p.turnoPretendido}</strong></div>
-                    <div style="font-size:11px; color:#aaa; display:flex; justify-content:space-between; align-items:center;">
-                        <span>📅 ${dataStr}</span>
-                        <span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span>
-                    </div>
+                    <div class="pedido-header">Para: ${p.colega_nome}</div>
+                    <div class="pedido-corpo">🔄 <strong>${p.meuTurno}</strong> ➡️ <strong>${p.turnoPretendido}</strong></div>
+                    <div class="pedido-footer"><span>📅 ${dataStr}</span><span class="status-badge status-${p.status}">${p.status.toUpperCase()}</span></div>
                 </div>`;
         });
     });
@@ -515,29 +527,20 @@
   }
 
   const formatarParaDB = (data, periodo) => {
-      if(!data) return periodo;
-      const d = new Date(data + "T00:00:00");
+      if(!data) return periodo; const d = new Date(data + "T00:00:00");
       return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }) + ", " + periodo;
   };
 
   document.getElementById("btn-enviar-pedido").onclick = async function() {
-      const btn = this;
-      const msg = document.getElementById("pedido-msg");
+      const btn = this; const msg = document.getElementById("pedido-msg");
       const colega = document.getElementById("p-colega-select");
-      const meuD = document.getElementById("p-meu-data").value;
-      const meuP = document.getElementById("p-meu-periodo").value;
-      const pretD = document.getElementById("p-pret-data").value;
-      const pretP = document.getElementById("p-pret-periodo").value;
+      const meuD = document.getElementById("p-meu-data").value; const meuP = document.getElementById("p-meu-periodo").value;
+      const pretD = document.getElementById("p-pret-data").value; const pretP = document.getElementById("p-pret-periodo").value;
       const obs = document.getElementById("p-motivo").value;
       
-      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { 
-          msg.innerHTML = "<span style='color:red;'>❌ Preencha todas as datas e o colega.</span>"; 
-          return; 
-      }
+      if(!colega.value || !meuD || !pretD || !meuP || !pretP) { msg.innerHTML = "<span style='color:red;'>❌ Preencha todas as datas e o colega.</span>"; return; }
 
-      btn.disabled = true;
-      btn.innerText = "A aguardar...";
-
+      btn.disabled = true; btn.innerText = "A aguardar...";
       try {
           const meuTurnoFinal = formatarParaDB(meuD, meuP);
           const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
@@ -549,42 +552,31 @@
               descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp()
           });
           
-          msg.innerHTML = "<span style='color:green;'>✅ Pedido enviado e registado!</span>";
-          document.getElementById("p-meu-periodo").value = "";
-          document.getElementById("p-pret-periodo").value = "";
-          document.getElementById("p-motivo").value = "";
-          btn.disabled = false;
-          btn.innerText = "Enviar Pedido";
+          msg.innerHTML = "<span style='color:green;'>✅ Pedido registado!</span>";
+          document.getElementById("p-meu-periodo").value = ""; document.getElementById("p-pret-periodo").value = ""; document.getElementById("p-motivo").value = "";
+          btn.disabled = false; btn.innerText = "Enviar Pedido";
 
           emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
-          fetch(`${API_BASE}/pedido`, {
-              method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value })
-          }).catch(e => {});
-
-      } catch(e) { 
-          msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação.</span>";
-          btn.disabled = false;
-          btn.innerText = "Enviar Pedido";
-      }
+          fetch(`${API_BASE}/pedido`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value }) }).catch(e => {});
+      } catch(e) { msg.innerHTML = "<span style='color:red;'>❌ Erro na comunicação.</span>"; btn.disabled = false; btn.innerText = "Enviar Pedido"; }
   };
 
   function carregarAvisos() {
-    onSnapshot(query(collection(db, "Avisos"), orderBy("createdAt", "desc")), snap => {
+    // Busca apenas avisos recentes (últimos 60 dias)
+    const q = query(collection(db, "Avisos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
+    onSnapshot(q, snap => {
         const div = document.getElementById("lista-avisos");
         div.innerHTML = "";
         snap.forEach(d => {
             const a = d.data();
             const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
-            const card = document.createElement("div"); card.className = "card";
-            card.style.borderLeftColor = "var(--primary)";
-            
+            const card = document.createElement("div"); card.className = "card"; card.style.borderLeftColor = "var(--primary)";
             card.innerHTML = `
-                <div style="display:flex; justify-content:space-between;"><strong>👤 ${a.autor}</strong><span style="font-size:11px; color:#aaa;">${dataAviso}</span></div>
+                <div style="display:flex; justify-content:space-between;"><strong>👤 ${a.autor}</strong><span style="font-size:11px; color:var(--text-muted);">${dataAviso}</span></div>
                 <div style="font-size:14px; margin:12px 0; white-space:pre-wrap;">${a.texto}</div>
                 <div style="display:flex; gap:15px; align-items:center; margin-top:10px;">
-                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:12px; padding:6px 12px; border-radius:4px; border:1px solid #2AA8A8; background:#e6f4f4; color:#2AA8A8; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">✅ Confirmar Leitura</button>
-                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:12px; color:#2D6E8E; font-weight:bold; border:none; background:none; cursor:pointer; display:flex; align-items:center; gap:5px;">👁️ Ver confirmações</button>` : ""}
+                    <button onclick="window.confirmarLeitura('${d.id}')" style="font-size:12px; padding:6px 12px; border-radius:4px; border:1px solid var(--primary); background:transparent; color:var(--primary); font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">✅ Confirmar Leitura</button>
+                    ${isAdmin ? `<button onclick="window.verQuemViu('${d.id}')" style="font-size:12px; color:var(--secondary); font-weight:bold; border:none; background:none; cursor:pointer; display:flex; align-items:center; gap:5px;">👁️ Confirmados</button>` : ""}
                     ${isAdmin ? `<button onclick="window.apagarAviso('${d.id}')" style="border:none; background:none; cursor:pointer; font-size:16px;">🗑️</button>` : ""}
                 </div>`;
             div.appendChild(card);
@@ -594,29 +586,21 @@
 
   document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
   document.getElementById("btn-publicar").addEventListener("click", async function() {
-      const btn = this;
-      const txt = document.getElementById("aviso-texto").value;
+      const btn = this; const txt = document.getElementById("aviso-texto").value;
       if(!txt) return;
-      
       btn.disabled = true;
 
       await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
       
-      document.getElementById("modal-aviso").classList.add("hidden");
-      document.getElementById("aviso-texto").value = "";
-      btn.disabled = false;
-
-      fetch(`${API_BASE}/aviso`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt })
-      }).catch(e => {});
+      document.getElementById("modal-aviso").classList.add("hidden"); document.getElementById("aviso-texto").value = ""; btn.disabled = false;
+      fetch(`${API_BASE}/aviso`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt }) }).catch(e => {});
   });
 
   window.verQuemViu = async (id) => {
       const snap = await getDocs(collection(db, "Avisos", id, "acknowledgements"));
       const lista = document.getElementById("lista-vistos");
-      lista.innerHTML = snap.empty ? "<p style='color:#666;'>Ninguém confirmou ainda.</p>" : "";
-      snap.forEach(d => { lista.innerHTML += `<div style='padding:5px 0; border-bottom:1px solid #eee;'>• ${d.data().nome}</div>`; });
+      lista.innerHTML = snap.empty ? "<p style='color:var(--text-muted);'>Ninguém confirmou ainda.</p>" : "";
+      snap.forEach(d => { lista.innerHTML += `<div style='padding:5px 0; border-bottom:1px solid var(--border);'>• ${d.data().nome}</div>`; });
       document.getElementById("modal-vistos").classList.remove("hidden");
   };
 
@@ -636,18 +620,49 @@
   
   document.getElementById("btn-tec-atual").onclick = () => { updateVisual(document.getElementById("btn-tec-atual"), document.getElementById("btn-tec-prox")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_atual); };
   document.getElementById("btn-tec-prox").onclick = () => { updateVisual(document.getElementById("btn-tec-prox"), document.getElementById("btn-tec-atual")); setViewer("div-tec", "dl-tec", linksDB.horario_tecnicos_proximo); };
-  
   document.getElementById("btn-med-atual").onclick = () => { updateVisual(document.getElementById("btn-med-atual"), document.getElementById("btn-med-prox")); setViewer("div-med", "dl-med", linksDB.horario_medicos_atual); };
   document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "dl-med", linksDB.horario_medicos_proximo); };
 
-  document.getElementById("btn-login").onclick = () => {
+  // --- LOGIN COM FEEDBACK DE CARREGAMENTO ---
+  document.getElementById("btn-login").onclick = async () => {
+      const btn = document.getElementById("btn-login");
+      const err = document.getElementById("login-error");
       const u = document.getElementById("login-email").value.trim();
-      signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", document.getElementById("login-pass").value).catch(() => document.getElementById("login-error").textContent = "Credenciais inválidas.");
+      const p = document.getElementById("login-pass").value;
+
+      if(!u || !p) { err.textContent = "Preencha todos os campos."; return; }
+
+      // Ativa o Loading state
+      btn.disabled = true;
+      btn.textContent = "A verificar...";
+      err.textContent = "";
+
+      try {
+          await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", p);
+      } catch(e) {
+          err.textContent = "Credenciais inválidas.";
+          // Reverte se falhar
+          btn.disabled = false;
+          btn.textContent = "ENTRAR";
+      }
+  };
+
+  // --- RECUPERAÇÃO DE PASSWORD ---
+  document.getElementById("btn-forgot").onclick = () => {
+      const email = document.getElementById("login-email").value.trim();
+      if(!email || !email.includes("@")) {
+          alert("Por favor, digite o seu e-mail completo na caixa acima e clique novamente em 'Esqueci-me da password'.");
+          return;
+      }
+      sendPasswordResetEmail(auth, email).then(() => {
+          alert("✅ Link de recuperação enviado!\n\nVerifique o seu email (e a pasta de SPAM) para redefinir a palavra-passe.");
+      }).catch(err => {
+          alert("❌ Erro ao enviar email. Verifique se o endereço está escrito corretamente.");
+      });
   };
   
-  document.getElementById("btn-logout").onclick = () => {
-      signOut(auth).then(() => window.location.reload());
-  };
+  document.getElementById("btn-logout").onclick = () => { signOut(auth).then(() => window.location.reload()); };
+
 </script>
 </body>
 </html>
