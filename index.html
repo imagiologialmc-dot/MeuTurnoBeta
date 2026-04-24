@@ -517,6 +517,7 @@
           setViewer("div-oncall", "dl-oncall", linksDB.oncall);
           setViewer("div-tel", "dl-tel", linksDB["lista telefonica"]); 
 
+          // --- MOTOR INTELIGENTE DE FORMULÁRIOS QCI ---
           const formsDiv = document.getElementById("lista-formularios");
           formsDiv.innerHTML = "";
           let hasForms = false;
@@ -528,7 +529,8 @@
               if (lowerKey.startsWith("qci_") || lowerKey.startsWith("qci ")) {
                   hasForms = true;
                   
-                  let wordsRaw = key.replace(/^(qci)[_\s]*/i, '').replace(/_/g, " ");
+                  // Limpa prefixos e troca underscores
+                  let wordsRaw = key.replace(/^qci[_\s]*/i, '').replace(/_/g, " ");
                   
                   const siglas = ['RM', 'TC', 'MM', 'BAAF', 'QCI', 'EKG', 'RX'];
                   const ligacoes = ['de', 'da', 'do', 'por', 'e', 'ou', 'com', 'para'];
@@ -557,7 +559,14 @@
                   }
 
                   dlUrl = dlUrl.trim();
-                  dlUrl = dlUrl.split('?')[0] + "?download=1";
+                  
+                  // CORREÇÃO: Transforma link de embed em link de DOWNLOAD DIRETO (OneDrive)
+                  if(dlUrl.includes("onedrive.live.com/embed")) {
+                      dlUrl = dlUrl.replace("/embed", "/download");
+                  } else {
+                      if(!dlUrl.includes("?")) dlUrl += "?download=1";
+                      else if(!dlUrl.includes("download=1")) dlUrl += "&download=1";
+                  }
 
                   formsDiv.innerHTML += `
                       <div class="card" style="border-left-color: var(--primary); display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; margin-bottom: 10px;">
