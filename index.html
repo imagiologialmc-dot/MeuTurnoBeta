@@ -517,7 +517,6 @@
           setViewer("div-oncall", "dl-oncall", linksDB.oncall);
           setViewer("div-tel", "dl-tel", linksDB["lista telefonica"]); 
 
-          // --- MOTOR INTELIGENTE DE FORMULÁRIOS QCI ---
           const formsDiv = document.getElementById("lista-formularios");
           formsDiv.innerHTML = "";
           let hasForms = false;
@@ -529,8 +528,23 @@
               if (lowerKey.startsWith("qci_") || lowerKey.startsWith("qci ")) {
                   hasForms = true;
                   
-                  // Limpa a palavra "QCI_" e troca os _ por espaços
-                  let formName = key.replace(/^(qci)[_\s]*/i, '').replace(/_/g, " ");
+                  let wordsRaw = key.replace(/^(qci)[_\s]*/i, '').replace(/_/g, " ");
+                  
+                  const siglas = ['RM', 'TC', 'MM', 'BAAF', 'QCI', 'EKG', 'RX'];
+                  const ligacoes = ['de', 'da', 'do', 'por', 'e', 'ou', 'com', 'para'];
+
+                  let formName = wordsRaw.split(' ').map((word, index) => {
+                      let trimW = word.trim();
+                      if(!trimW) return "";
+                      let upperW = trimW.toUpperCase();
+                      let lowerW = trimW.toLowerCase();
+                      
+                      if(siglas.includes(upperW)) return upperW;
+                      if(ligacoes.includes(lowerW) && index !== 0) return lowerW;
+                      return trimW.charAt(0).toUpperCase() + trimW.slice(1).toLowerCase();
+                  }).join(' ').trim();
+                  
+                  formName = formName.charAt(0).toUpperCase() + formName.slice(1);
                   
                   let rawUrl = linksDB[key];
                   let dlUrl = rawUrl;
@@ -543,8 +557,6 @@
                   }
 
                   dlUrl = dlUrl.trim();
-
-                  // FORÇAR DOWNLOAD EM VEZ DE ABRIR NO ONEDRIVE
                   dlUrl = dlUrl.split('?')[0] + "?download=1";
 
                   formsDiv.innerHTML += `
