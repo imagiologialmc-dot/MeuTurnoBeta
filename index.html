@@ -35,6 +35,8 @@
       --border: #dddddd;
       --card-shadow: 0 1px 6px rgba(0,0,0,0.07);
       --nav-active: #2AA8A8;
+      --login-grad-1: #2AA8A8;
+      --login-grad-2: #2D6E8E;
     }
 
     /* MODO ESCURO (Android Style) 🌙 */
@@ -46,6 +48,8 @@
       --border: #3C4043;     
       --card-shadow: 0 4px 12px rgba(0,0,0,0.3);
       --nav-active: #4DD0E1; 
+      --login-grad-1: #163838; /* Gradiente noturno elegante para o fundo do login */
+      --login-grad-2: #142833;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,7 +68,7 @@
     .brand-text { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -0.5px; }
     
     /* LOGIN */
-    #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); overflow: hidden; }
+    #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; background: linear-gradient(135deg, var(--login-grad-1) 0%, var(--login-grad-2) 100%); overflow: hidden; transition: background 0.3s ease; }
     .logo-anim-container { position: relative; width: 280px; height: 150px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
     .logo-clinic { position: absolute; width: 240px; height: auto; object-fit: contain; animation: clinicPulse 3.5s forwards; }
     .logo-app { position: absolute; width: 130px; height: 130px; border-radius: 32px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.3); opacity: 0; animation: appFadeIn 3.5s forwards; }
@@ -78,6 +82,16 @@
     .login-box { background: var(--surface); border-radius: 20px; padding: 30px 25px; width: 100%; box-shadow: var(--card-shadow); text-align: center; transition: background 0.3s; border: 1px solid var(--border); }
     .login-box input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1.5px solid var(--border); outline: none; text-align: left; font-size: 15px; background: var(--bg); color: var(--text-main); transition: 0.3s; }
     .login-box input:focus { border-color: var(--primary); }
+    
+    /* CORREÇÃO DO AUTOFILL NO MODO ESCURO */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
+        -webkit-text-fill-color: var(--text-main) !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
     
     .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 15px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-main:disabled { background: #888; cursor: not-allowed; opacity: 0.7; }
@@ -123,10 +137,10 @@
     .pedido-header { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
     .pedido-header .material-symbols-rounded { font-size: 16px; }
     .pedido-corpo { font-size: 14px; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .pedido-corpo .material-symbols-rounded { font-size: 16px; color: var(--primary); }
+    .pedido-corpo .material-symbols-rounded { font-size: 16px; color: var(--text-muted); }
     .pedido-obs { font-size: 13px; color: var(--text-muted); font-style: italic; background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; transition: background 0.3s; display: flex; align-items: flex-start; gap: 6px; }
     .pedido-obs .material-symbols-rounded { font-size: 16px; margin-top: 1px; }
-    .pedido-footer { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+    .pedido-footer { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; margin-top: 10px;}
     
     .card-pendente { border-left-color: #FFD700; }
     .card-aprovado { border-left-color: var(--primary); }
@@ -153,6 +167,10 @@
     .aviso-item-btn { font-size:12px; padding:6px 12px; border-radius:6px; border:1px solid var(--primary); background:transparent; color:var(--primary); font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:0.2s; }
     .aviso-item-btn:hover { background: var(--primary); color: white; }
     .aviso-item-btn-text { font-size:12px; color:var(--secondary); font-weight:bold; border:none; background:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    
+    /* EMPTY STATES */
+    .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
+    .empty-state .material-symbols-rounded { font-size: 48px; color: var(--border); margin-bottom: 10px; display: block; }
   </style>
 </head>
 <body>
@@ -310,7 +328,7 @@
         </h3>
         <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main); resize:none;" placeholder="Escreva aqui..."></textarea>
         <div style="display:flex; gap:10px;">
-            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--bg); color:var(--text-main); font-weight:bold; cursor:pointer;">Cancelar</button>
+            <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--bg); color:var(--text-main); font-weight:bold; cursor:pointer; border: 1px solid var(--border);">Cancelar</button>
             <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;"><span class="material-symbols-rounded" style="font-size: 18px;">publish</span> Publicar</button>
         </div>
     </div>
@@ -455,7 +473,7 @@
   function setViewer(divId, dlId, rawUrl) {
     const wrapper = document.getElementById(divId);
     if (!wrapper) return;
-    if (!rawUrl) { wrapper.innerHTML = "<p style='padding:30px; color:var(--text-muted); text-align:center;'>Documento não disponível.</p>"; return; }
+    if (!rawUrl) { wrapper.innerHTML = "<div class='empty-state'><span class='material-symbols-rounded'>description</span>Documento não disponível.</div>"; return; }
     let url = rawUrl;
     if (url.includes("src=")) { const match = url.match(/src=["']([^"']+)["']/); if (match) url = match[1]; } 
     else { url = url.split('"')[0].split(' ')[0]; }
@@ -515,7 +533,7 @@
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-gestao");
-        div.innerHTML = snap.empty ? `<p style='padding:20px; color:var(--text-muted); text-align:center;'>Nenhum registo recente.</p>` : "";
+        div.innerHTML = snap.empty ? `<div class='empty-state'><span class='material-symbols-rounded'>task</span>Nenhum pedido em estado pendente.</div>` : "";
         snap.forEach(d => {
             const p = d.data();
             const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Agora";
@@ -567,7 +585,7 @@
     const q = query(collection(db, "Pedidos"), where("uid", "==", currentUser.uid), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("meus-pedidos");
-        div.innerHTML = snap.empty ? "<p style='font-size:13px; color:var(--text-muted);'>Nenhum pedido efetuado recentemente.</p>" : "";
+        div.innerHTML = snap.empty ? "<div class='empty-state'><span class='material-symbols-rounded'>inbox</span>Nenhum pedido efetuado recentemente.</div>" : "";
         snap.forEach(d => {
             const p = d.data();
             const dataStr = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "Recente";
@@ -645,7 +663,7 @@
     const q = query(collection(db, "Avisos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
     onSnapshot(q, snap => {
         const div = document.getElementById("lista-avisos");
-        div.innerHTML = "";
+        div.innerHTML = snap.empty ? `<div class='empty-state'><span class='material-symbols-rounded'>campaign</span>Sem avisos recentes.</div>` : "";
         snap.forEach(d => {
             const a = d.data();
             const dataAviso = a.createdAt ? new Date(a.createdAt.seconds * 1000).toLocaleDateString("pt-PT") : "";
