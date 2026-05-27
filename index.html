@@ -394,7 +394,8 @@
     <button class="nav-btn" data-tab="oncall"><span class="material-symbols-rounded icon">emergency</span>Oncall</button>
     <button class="nav-btn" data-tab="telefones"><span class="material-symbols-rounded icon">contact_phone</span>Lista</button>
     <button class="nav-btn" data-tab="formularios"><span class="material-symbols-rounded icon">folder_open</span>Formulários</button>
-    <button class="nav-btn" data-tab="ocorrencias"><span class="material-symbols-rounded icon">report_problem</span>Ocorrências</button>
+    <button class="nav-btn" data-tab="ocorrencias" id="nav-ocorrencias"><span class="material-symbols-rounded icon">report_problem</span>Ocorrências</button>
+
     <button id="nav-pedidos" class="nav-btn" data-tab="pedidos"><span class="material-symbols-rounded icon">sync_alt</span>Trocas</button>
     <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="material-symbols-rounded icon">settings</span>Gestão</button>
   </nav>
@@ -506,8 +507,8 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12
   const API_BASE = "https://meuturno-notifications.onrender.com";
   const VAPID_KEY = "BDd0_9lubI0cQ2dEbfiCM40GLq5HkkGa9e6FPbIZ4UCR5ClbPyeiJ2eZD_u1PhZXcjeCRJSFhH8MdOkgvNjxvj8";
   
-  // ATENÇÃO: COLA AQUI O LINK DO TEU SCRIPT DO GOOGLE DRIVE
-  const APPS_SCRIPT_URL = "COLA_AQUI_O_LINK_DO_TEU_APPS_SCRIPT";
+  // URL DO GOOGLE APPS SCRIPT ATUALIZADO
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN4yCw0bkClQgvxDy7uQKj6eKO-_HtXVMZjnWeEWYg8UASKcENSgA5VGfW0xwVIRNfmQ/exec";
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
   let filtroOcorrencias = "abertas"; 
@@ -652,9 +653,9 @@ function gerirAvisoNotificacoes() {
           
           carregarColegasRole(); 
           
-          // Lógica de visualização da Aba Ocorrências
+          // Lógica de visualização da Aba Ocorrências baseada no Role
           const rolesAutorizadasOc = ['administracao', 'tecnico', 'medico', 'recepcao', 'servico'];
-          const navOcorrencias = document.querySelector('.nav-btn[data-tab="ocorrencias"]');
+          const navOcorrencias = document.getElementById('nav-ocorrencias');
           if (navOcorrencias) {
               if (rolesAutorizadasOc.includes(userRole)) {
                   navOcorrencias.classList.remove('hidden');
@@ -1048,12 +1049,23 @@ function gerirAvisoNotificacoes() {
               for (let i = 0; i < fotosInput.files.length; i++) {
                   const file = fotosInput.files[i];
                   const base64Data = await lerFicheiroBase64(file);
+                  
                   const res = await fetch(APPS_SCRIPT_URL, {
                       method: "POST",
                       body: JSON.stringify({ action: "upload", filename: file.name, mimeType: file.type, data: base64Data })
                   });
-                  const jsonRes = await res.json();
-                  if(jsonRes.status === "success") { fotosGuardadas.push({ url: jsonRes.url, id: jsonRes.id }); }
+                  
+                  const textRes = await res.text();
+                  let jsonRes;
+                  try {
+                      jsonRes = JSON.parse(textRes);
+                  } catch(err) {
+                      throw new Error("O Google Drive bloqueou o acesso. Verifica se o Apps Script está como 'Quem tem acesso: Qualquer Pessoa'. Resposta: " + textRes.substring(0, 30) + "...");
+                  }
+                  
+                  if(jsonRes.status === "success") { 
+                      fotosGuardadas.push({ url: jsonRes.url, id: jsonRes.id }); 
+                  }
               }
           }
 
