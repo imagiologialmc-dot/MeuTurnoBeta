@@ -506,7 +506,6 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12
   const API_BASE = "https://meuturno-notifications.onrender.com";
   const VAPID_KEY = "BDd0_9lubI0cQ2dEbfiCM40GLq5HkkGa9e6FPbIZ4UCR5ClbPyeiJ2eZD_u1PhZXcjeCRJSFhH8MdOkgvNjxvj8";
   
-  // URL DO GOOGLE APPS SCRIPT ATUALIZADO
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx88CleYP9RiHMh6ILRe9LdfBsg1bql1RnwRBblJdLACuaOaqEk0xRqmhCZ8iKldZpiCw/exec";
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
@@ -787,7 +786,7 @@ function gerirAvisoNotificacoes() {
                       <div style="margin-bottom: 8px; margin-top: 5px;">
                           <strong>Anexos:</strong><br>
                           <div style="display:flex; gap:8px; margin-top:5px; overflow-x:auto; padding-bottom:5px;">
-                              ${o.fotos.map(f => `<a href="${f.url}" target="_blank"><img src="${f.url}" style="height:60px; border-radius:6px; border:1px solid var(--border);"></a>`).join('')}
+                              ${o.fotos.map(f => `<a href="${f.url}" target="_blank"><img src="https://drive.google.com/uc?export=view&id=${f.id}" style="height:60px; width:60px; object-fit:cover; border-radius:6px; border:1px solid var(--border);"></a>`).join('')}
                           </div>
                       </div>
                       ` : ""}
@@ -838,12 +837,13 @@ function gerirAvisoNotificacoes() {
                           <span>${o.modalidade} - ${o.tipo}</span>
                           <span class="status-badge" style="${badgeStyle}">${o.estado.toUpperCase()}</span>
                       </div>
-                      <div class="pedido-obs" style="background:var(--bg); flex-direction:column;">
+                      <div class="pedido-obs" style="background:var(--bg); flex-direction:column; align-items:flex-start;">
                           <div style="margin-bottom:5px;"><strong>Utente:</strong> ${o.utente_nome || 'N/A'} (ID: ${o.utente_id || 'N/A'})</div>
-                          <div>${o.descricao}</div>
+                          <div style="margin-bottom:5px;"><strong>Descrição:</strong> ${o.descricao}</div>
+                          ${o.medidas ? `<div style="margin-bottom:5px; padding-top:5px; border-top:1px solid var(--border); width:100%;"><strong>Feedback/Ações:</strong> ${o.medidas}</div>` : ""}
                           ${o.fotos && o.fotos.length > 0 ? `
                               <div style="margin-top:10px; display:flex; gap:5px; overflow-x:auto; padding-bottom:5px;">
-                                  ${o.fotos.map(f => `<a href="${f.url}" target="_blank"><img src="${f.url}" style="height:40px; border-radius:4px; border:1px solid var(--border);"></a>`).join('')}
+                                  ${o.fotos.map(f => `<a href="${f.url}" target="_blank"><img src="https://drive.google.com/uc?export=view&id=${f.id}" style="height:40px; width:40px; object-fit:cover; border-radius:4px; border:1px solid var(--border);"></a>`).join('')}
                               </div>
                           ` : ""}
                       </div>
