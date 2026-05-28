@@ -147,7 +147,31 @@
     
     .empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
     .empty-state .material-symbols-rounded { font-size: 48px; color: var(--border); margin-bottom: 10px; display: block; }
-  </style>
+
+  /* Otimização Mobile para o Visualizador do Drive */
+@media (max-width: 768px) {
+  /* Remove as margens laterais do ecrã para esticar o iframe */
+  .tab-content { padding-left: 0; padding-right: 0; }
+  
+  /* Mantém o título e os botões de "Mês Atual" alinhados */
+  .section-title, .toggle-container { padding-left: 12px; padding-right: 12px; }
+  
+  /* Remove as bordas e cantos redondos do cartão do visualizador */
+  .viewer-card { border-radius: 0; border-left: none; border-right: none; }
+  
+  /* Aumenta significativamente a altura do horário no ecrã */
+  iframe { 
+    height: calc(100svh - 180px); 
+    min-height: 70vh;
+  }
+  
+  /* Força a fluidez de scroll no Safari (iPhones) */
+  .viewer-card div[id^="div-"] {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+</style>
 </head>
 <body>
 
