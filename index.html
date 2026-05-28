@@ -395,7 +395,6 @@
     <button class="nav-btn" data-tab="telefones"><span class="material-symbols-rounded icon">contact_phone</span>Lista</button>
     <button class="nav-btn" data-tab="formularios"><span class="material-symbols-rounded icon">folder_open</span>Formulários</button>
     <button class="nav-btn" data-tab="ocorrencias" id="nav-ocorrencias"><span class="material-symbols-rounded icon">report_problem</span>Ocorrências</button>
-
     <button id="nav-pedidos" class="nav-btn" data-tab="pedidos"><span class="material-symbols-rounded icon">sync_alt</span>Trocas</button>
     <button id="nav-gestao" class="nav-btn hidden" data-tab="gestao"><span class="material-symbols-rounded icon">settings</span>Gestão</button>
   </nav>
@@ -508,7 +507,7 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12
   const VAPID_KEY = "BDd0_9lubI0cQ2dEbfiCM40GLq5HkkGa9e6FPbIZ4UCR5ClbPyeiJ2eZD_u1PhZXcjeCRJSFhH8MdOkgvNjxvj8";
   
   // URL DO GOOGLE APPS SCRIPT ATUALIZADO
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN4yCw0bkClQgvxDy7uQKj6eKO-_HtXVMZjnWeEWYg8UASKcENSgA5VGfW0xwVIRNfmQ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx88CleYP9RiHMh6ILRe9LdfBsg1bql1RnwRBblJdLACuaOaqEk0xRqmhCZ8iKldZpiCw/exec";
   
   let currentUser = null, userRole = null, isAdmin = false, linksDB = {}, filtroGestao = "pendente";
   let filtroOcorrencias = "abertas"; 
@@ -896,6 +895,7 @@ function gerirAvisoNotificacoes() {
                       const idsParaApagar = data.fotos.map(f => f.id);
                       fetch(APPS_SCRIPT_URL, {
                           method: "POST",
+                          headers: { "Content-Type": "text/plain;charset=utf-8" },
                           body: JSON.stringify({ action: "delete", fileIds: idsParaApagar })
                       }).catch(e => console.log("Erro silencioso ao apagar foto: ", e));
                   }
@@ -1052,6 +1052,7 @@ function gerirAvisoNotificacoes() {
                   
                   const res = await fetch(APPS_SCRIPT_URL, {
                       method: "POST",
+                      headers: { "Content-Type": "text/plain;charset=utf-8" },
                       body: JSON.stringify({ action: "upload", filename: file.name, mimeType: file.type, data: base64Data })
                   });
                   
