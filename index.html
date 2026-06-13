@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>MeuTurno v2.0</title>
+  <title>Meu Turno 2.2</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2AA8A8">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -131,6 +131,13 @@
     .status-reprovado { background: #f8d7da; color: #842029; }
 
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; overflow-x: auto; padding-bottom: env(safe-area-inset-bottom); transition: background 0.3s; }
+    
+    /* Forçar e estilizar a barra de scroll horizontal no mobile */
+    .bottom-nav::-webkit-scrollbar { height: 4px; }
+    .bottom-nav::-webkit-scrollbar-track { background: var(--surface); }
+    .bottom-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .bottom-nav::-webkit-scrollbar-thumb:active { background: var(--text-muted); }
+
     .nav-btn { flex: 1; min-width: 62px; padding: 10px 2px 8px 2px; border: none; background: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
     .nav-btn .icon { font-size: 24px; transition: transform 0.2s; font-variation-settings: 'FILL' 0; }
     .nav-btn.active { color: var(--nav-active); font-weight: 700; }
@@ -149,29 +156,14 @@
     .empty-state .material-symbols-rounded { font-size: 48px; color: var(--border); margin-bottom: 10px; display: block; }
 
   /* Otimização Mobile para o Visualizador do Drive */
-@media (max-width: 768px) {
-  /* Remove as margens laterais do ecrã para esticar o iframe */
-  .tab-content { padding-left: 0; padding-right: 0; }
-  
-  /* Mantém o título e os botões de "Mês Atual" alinhados */
-  .section-title, .toggle-container { padding-left: 12px; padding-right: 12px; }
-  
-  /* Remove as bordas e cantos redondos do cartão do visualizador */
-  .viewer-card { border-radius: 0; border-left: none; border-right: none; }
-  
-  /* Aumenta significativamente a altura do horário no ecrã */
-  iframe { 
-    height: calc(100svh - 180px); 
-    min-height: 70vh;
+  @media (max-width: 768px) {
+    .tab-content { padding-left: 0; padding-right: 0; }
+    .section-title, .toggle-container { padding-left: 12px; padding-right: 12px; }
+    .viewer-card { border-radius: 0; border-left: none; border-right: none; }
+    iframe { height: calc(100svh - 180px); min-height: 70vh; }
+    .viewer-card div[id^="div-"] { -webkit-overflow-scrolling: touch; overflow-y: auto; }
   }
-  
-  /* Força a fluidez de scroll no Safari (iPhones) */
-  .viewer-card div[id^="div-"] {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: auto;
-  }
-}
-</style>
+  </style>
 </head>
 <body>
 
@@ -185,10 +177,10 @@
   </div>
 
   <div class="login-form-container">
-    <h1 class="brand-text" style="color:white; font-size:34px; margin-bottom:0px;">MeuTurno</h1>
+    <h1 class="brand-text" style="color:white; font-size:28px; margin-bottom:0px; text-align:center;">Meu Turno 2.2</h1>
     <p style="color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:25px; letter-spacing: 1px;">v2.0</p>
     <div class="login-box">
-      <input type="text" id="login-email" placeholder="Utilizador ou Email">
+      <input type="text" id="login-email" placeholder="Primeiro.Ultimo nome">
       <input type="password" id="login-pass" placeholder="Password">
       <button class="btn-main" id="btn-login"><span class="material-symbols-rounded">login</span> ENTRAR</button>
       <div id="login-error" style="color:#e74c3c; font-size:12px; margin-top:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:4px;"></div>
@@ -202,7 +194,7 @@
     <div style="display:flex; align-items:center; gap:10px;">
         <img src="icon-512.png" style="width: 28px; height: 28px; border-radius: 7px; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" onerror="this.style.display='none'; document.getElementById('header-text-icon').style.display='inline';" alt="Logo">
         <span id="header-text-icon" class="material-symbols-rounded" style="display:none; font-size: 24px;">medical_services</span>
-        <strong class="brand-text" style="font-size:19px;">MeuTurno</strong>
+        <strong class="brand-text" style="font-size:18px;">Meu Turno 2.2</strong>
     </div>
     <div style="display:flex; align-items:center; gap:14px;">
         <span id="theme-toggle" class="material-symbols-rounded" style="cursor:pointer; font-size:22px; transition: transform 0.3s;" title="Mudar Tema">dark_mode</span>
@@ -251,6 +243,58 @@
       <div class="viewer-actions"><a href="#" id="dl-oncall" class="btn-action" target="_blank"><span class="material-symbols-rounded" style="font-size: 18px;">download</span> Fazer Download</a></div>
       <div id="div-oncall"></div>
     </div>
+  </div>
+
+  <!-- NOVA ABA: CHAMADAS E HORAS EXTRA -->
+  <div id="tab-chamadas" class="tab-content hidden">
+    <div class="section-title"><span class="material-symbols-rounded">phone_in_talk</span> Registar Chamadas / Horas Extra</div>
+    <div class="form-card">
+      <form id="form-chamadas">
+        <div class="form-group">
+          <label class="form-label"><span class="material-symbols-rounded">person</span> Funcionário</label>
+          <input type="text" id="c-nome" readonly style="opacity: 0.8; font-weight: 600;">
+          <input type="text" id="c-mecanografico" readonly style="opacity: 0.8; margin-top: 5px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="material-symbols-rounded">event</span> Data da Atividade / Piquete</label>
+          <input type="date" id="c-data" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="material-symbols-rounded">category</span> Tipo de Atividade</label>
+          <select id="c-tipo" required>
+            <option value="">-- Selecionar Atividade --</option>
+            <option value="On Calls">On Calls</option>
+            <option value="Extra Hours">Extra Hours</option>
+            <option value="Night Shifts">Night Shifts</option>
+            <option value="Holidays / Sundays">Holidays / Sundays</option>
+            <option value="Linha de Saúde">Linha de Saúde</option>
+            <option value="Home Care">Home Care</option>
+            <option value="Deliveries">Deliveries</option>
+          </select>
+        </div>
+        <div class="form-group" style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label class="form-label"><span class="material-symbols-rounded">more_time</span> Total Horas</label>
+            <input type="number" id="c-horas" min="0" max="24" step="0.5" value="0">
+          </div>
+          <div style="flex:1;">
+            <label class="form-label"><span class="material-symbols-rounded">grid_view</span> Total Turnos (Shifts)</label>
+            <input type="number" id="c-shifts" min="0" max="3" value="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="material-symbols-rounded">edit_note</span> Observações / Notas</label>
+          <textarea id="c-observacoes" placeholder="Notas adicionais ou motivo da chamada..."></textarea>
+        </div>
+        <button type="button" class="btn-main" id="btn-enviar-chamada" style="margin-top:0;">
+          <span class="material-symbols-rounded" style="font-size: 18px;">save</span> Gravar Atividade
+        </button>
+        <div id="chamada-msg" style="text-align:center; margin-top:12px; font-size:14px; display:flex; justify-content:center; align-items:center; gap:6px;"></div>
+      </form>
+    </div>
+    
+    <div class="section-title"><span class="material-symbols-rounded">history</span> Meus Registos</div>
+    <div id="lista-minhas-chamadas"></div>
   </div>
 
   <div id="tab-telefones" class="tab-content hidden">
@@ -416,6 +460,7 @@
     <button class="nav-btn" data-tab="tecnicos"><span class="material-symbols-rounded icon">calendar_month</span>Técnicos</button>
     <button class="nav-btn" data-tab="medicos"><span class="material-symbols-rounded icon">stethoscope</span>Médicos</button>
     <button class="nav-btn" data-tab="oncall"><span class="material-symbols-rounded icon">emergency</span>Oncall</button>
+    <button class="nav-btn hidden" data-tab="chamadas" id="nav-chamadas"><span class="material-symbols-rounded icon">phone_in_talk</span>Chamadas</button>
     <button class="nav-btn" data-tab="telefones"><span class="material-symbols-rounded icon">contact_phone</span>Lista</button>
     <button class="nav-btn" data-tab="formularios"><span class="material-symbols-rounded icon">folder_open</span>Formulários</button>
     <button class="nav-btn" data-tab="ocorrencias" id="nav-ocorrencias"><span class="material-symbols-rounded icon">report_problem</span>Ocorrências</button>
@@ -440,7 +485,14 @@
         <h3 class="brand-text" style="color:var(--primary); text-align:center; display:flex; align-items:center; justify-content:center; gap:8px;">
             <span class="material-symbols-rounded">edit_notifications</span> Novo Aviso
         </h3>
+        
+        <div style="margin-top: 15px;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--primary);">Publicar em nome de:</label>
+            <input type="text" id="aviso-autor" placeholder="Ex: Direção Clínica, RH, Manutenção..." style="width:100%; padding:10px; margin-top:5px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main);">
+        </div>
+
         <textarea id="aviso-texto" style="width:100%; height:120px; margin:15px 0; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main); resize:none;" placeholder="Escreva aqui..."></textarea>
+        
         <div style="display:flex; gap:10px;">
             <button onclick="document.getElementById('modal-aviso').classList.add('hidden')" style="flex:1; padding:12px; border-radius:10px; border:none; background:var(--bg); color:var(--text-main); font-weight:bold; cursor:pointer; border: 1px solid var(--border);">Cancelar</button>
             <button id="btn-publicar" class="btn-main" style="flex:1; margin:0;"><span class="material-symbols-rounded" style="font-size: 18px;">publish</span> Publicar</button>
@@ -537,6 +589,9 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12
   
   const limiteData = new Date();
   limiteData.setDate(limiteData.getDate() - 60);
+
+  // Inicializa data de chamadas para o dia de hoje
+  document.getElementById("c-data").value = new Date().toISOString().split('T')[0];
 
   const themeToggle = document.getElementById('theme-toggle');
   function updateThemeIcon() {
@@ -668,7 +723,8 @@ function gerirAvisoNotificacoes() {
 
       const p = await getDoc(doc(db, "Utilizadores", user.uid));
       if (p.exists()) { 
-          userRole = p.data().role; 
+          const uData = p.data();
+          userRole = uData.role; 
           
           if (userRole === 'recepcao') document.getElementById("nav-pedidos").classList.add("hidden");
           else document.getElementById("nav-pedidos").classList.remove("hidden");
@@ -684,6 +740,15 @@ function gerirAvisoNotificacoes() {
               } else {
                   navOcorrencias.classList.add('hidden');
               }
+          }
+
+          // LÓGICA DE CHAMADAS / HORAS EXTRA
+          document.getElementById('c-nome').value = uData.nome || currentUser.email.split("@")[0];
+          document.getElementById('c-mecanografico').value = uData.numeroMecanografico || "N/A";
+          if (uData.podeChamadas === true) {
+              document.getElementById('nav-chamadas').classList.remove('hidden');
+          } else {
+              document.getElementById('nav-chamadas').classList.add('hidden');
           }
       }
       setTimeout(gerirAvisoNotificacoes, 1000); 
@@ -744,12 +809,98 @@ function gerirAvisoNotificacoes() {
       carregarAvisos();
       carregarMeusPedidos();
       carregarMinhasOcorrencias();
+      carregarMinhasChamadas();
 
     } else {
       document.getElementById("app-screen").classList.add("hidden");
       document.getElementById("login-screen").classList.remove("hidden");
     }
   });
+
+  // CARREGAR HISTÓRICO DE CHAMADAS
+  function carregarMinhasChamadas() {
+      const div = document.getElementById("lista-minhas-chamadas");
+      if (!div || !currentUser) return;
+      
+      const q = query(collection(db, "RegistosChamadas"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      onSnapshot(q, snap => {
+          div.innerHTML = snap.empty ? "<div class='empty-state'><span class='material-symbols-rounded'>hourglass_empty</span>Nenhum registo efetuado.</div>" : "";
+          snap.forEach(d => {
+              const c = d.data();
+              let statusClass = "status-pendente";
+              let cardClass = "card-pendente";
+              
+              if (c.status_aprovacao === "Aprovado") { statusClass = "status-aprovado"; cardClass = "card-aprovado"; }
+              if (c.status_aprovacao === "Reprovado") { statusClass = "status-reprovado"; cardClass = "card-reprovado"; }
+
+              div.innerHTML += `
+                  <div class="card ${cardClass}">
+                      <div class="pedido-header">
+                          <span class="material-symbols-rounded">event</span> ${c.data}
+                          <span class="status-badge ${statusClass}" style="margin-left:auto;">${c.status_aprovacao}</span>
+                      </div>
+                      <div class="pedido-corpo">
+                          <span class="material-symbols-rounded">star</span> <strong>${c.tipo_atividade}</strong> 
+                          <span style="margin-left: 8px;">(${c.horas_extra}h / ${c.turnos_extra} turnos)</span>
+                      </div>
+                      ${c.observacoes ? `<div class="pedido-obs"><span class="material-symbols-rounded">notes</span>${c.observacoes}</div>` : ""}
+                  </div>
+              `;
+          });
+      }, (error) => { console.error("Erro ao carregar chamadas:", error); });
+  }
+
+  // GRAVAR NOVA CHAMADA
+  document.getElementById("btn-enviar-chamada").onclick = async function() {
+      const btn = this;
+      const msg = document.getElementById("chamada-msg");
+      
+      const dataOc = document.getElementById("c-data").value;
+      const tipo = document.getElementById("c-tipo").value;
+      const horas = parseFloat(document.getElementById("c-horas").value) || 0;
+      const shifts = parseInt(document.getElementById("c-shifts").value) || 0;
+      const obs = document.getElementById("c-observacoes").value;
+
+      if(!dataOc || !tipo) {
+          alert("Por favor, preencha a Data e o Tipo de Atividade.");
+          return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A gravar...";
+
+      try {
+          const mesReferencia = dataOc.substring(0, 7); // Guarda o Mês (ex: 2026-06)
+          await addDoc(collection(db, "RegistosChamadas"), {
+              uid: currentUser.uid,
+              nome_colaborador: document.getElementById("c-nome").value,
+              numero_mecanografico: document.getElementById("c-mecanografico").value,
+              data: dataOc,
+              mes_referencia: mesReferencia,
+              tipo_atividade: tipo,
+              horas_extra: horas,
+              turnos_extra: shifts,
+              observacoes: obs,
+              status_aprovacao: "Pendente",
+              createdAt: serverTimestamp()
+          });
+
+          msg.innerHTML = "<span class='material-symbols-rounded' style='color:var(--primary);'>check_circle</span> <span style='color:var(--primary); font-weight:bold;'>Gravado com sucesso!</span>";
+          
+          document.getElementById("c-tipo").value = "";
+          document.getElementById("c-horas").value = "0";
+          document.getElementById("c-shifts").value = "0";
+          document.getElementById("c-observacoes").value = "";
+
+          setTimeout(() => { msg.innerHTML = ""; }, 3000);
+      } catch (error) {
+          console.error("Erro ao gravar chamada:", error);
+          msg.innerHTML = "<span class='material-symbols-rounded' style='color:#e74c3c;'>error</span> <span style='color:#e74c3c;'>Erro ao gravar.</span>";
+      } finally {
+          btn.disabled = false;
+          btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>save</span> Gravar Atividade";
+      }
+  };
 
   function carregarGestao() {
     const q = query(collection(db, "Pedidos"), where("status", "==", filtroGestao), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
@@ -1022,10 +1173,15 @@ function gerirAvisoNotificacoes() {
           const meuTurnoFinal = formatarParaDB(meuD, meuP); 
           const turnoPretendidoFinal = formatarParaDB(pretD, pretP);
           const docRef = await addDoc(collection(db, "Pedidos"), { 
-            uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email, meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome, descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp() 
+              uid: currentUser.uid, nome: currentUser.email.split("@")[0], email: currentUser.email, meuTurno: meuTurnoFinal, turnoPretendido: turnoPretendidoFinal, colega_email: colega.value, colega_nome: colega.options[colega.selectedIndex].dataset.nome, descricao: obs, status: "pendente", role: userRole, createdAt: serverTimestamp() 
           });
           const response = await fetch(`${API_BASE}/pedido`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: currentUser.email.split("@")[0], colega_email: colega.value }) });
-          emailjs.send("service_ypyd6nc", "template_r12r1qi", { from_name: currentUser.email, meu_turno: meuTurnoFinal, pedido_id: docRef.id }).catch(e => {});
+          emailjs.send("service_2224ck8", "template_r12r1qi", { 
+              tipo_acao: "Pedido de Troca",
+              from_name: currentUser.email.split("@")[0], 
+              detalhes: `Turno atual: ${meuTurnoFinal} -> Turno pretendido: ${turnoPretendidoFinal}`,
+              pedido_id: docRef.id 
+          }).catch(e => console.error("Erro no email (Trocas):", e));
 
           msg.innerHTML = "<span class='material-symbols-rounded' style='color:var(--primary);'>check_circle</span> <span style='color:var(--primary); font-weight:bold;'>Pedido enviado e notificado!</span>";
           btn.disabled = false; btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>send</span> Enviar Pedido";
@@ -1096,7 +1252,7 @@ function gerirAvisoNotificacoes() {
 
           btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A registar base de dados...";
 
-          await addDoc(collection(db, "Ocorrencias"), {
+          const docRefOc = await addDoc(collection(db, "Ocorrencias"), {
               uid: currentUser.uid,
               nome_submissor: currentUser.email.split("@")[0],
               cargo_submissor: userRole || "N/A",
@@ -1117,10 +1273,19 @@ function gerirAvisoNotificacoes() {
               createdAt: serverTimestamp()
           });
 
+          // 2. Envio genérico do EmailJS para Ocorrências
+          emailjs.send("service_2224ck8", "template_r12r1qi", { 
+              tipo_acao: "Ocorrência Técnica/Clínica",
+              from_name: currentUser.email.split("@")[0], 
+              detalhes: `Modalidade: ${modalidade}\nTipo: ${tipo}\nEncaminhado para: ${encaminhamento}\n\nDescrição: ${descricao}`,
+              pedido_id: docRefOc.id 
+          }).catch(e => console.error("Erro no email (Ocorrências):", e));
+
           msg.innerHTML = "<span class='material-symbols-rounded' style='color:var(--primary);'>check_circle</span> <span style='color:var(--primary); font-weight:bold;'>Ocorrência registada com sucesso!</span>";
           btn.disabled = false;
           btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>send</span> Submeter Ocorrência";
 
+          // Limpar o formulário após 2 segundos
           setTimeout(() => {
               document.querySelectorAll("#tab-ocorrencias input, #tab-ocorrencias textarea, #tab-ocorrencias select").forEach(el => el.value = "");
               msg.innerHTML = "";
@@ -1132,7 +1297,8 @@ function gerirAvisoNotificacoes() {
           btn.disabled = false;
           btn.innerHTML = "<span class='material-symbols-rounded' style='font-size: 18px;'>send</span> Submeter Ocorrência";
       }
-  };
+};
+
 
   function carregarAvisos() {
     const q = query(collection(db, "Avisos"), where("createdAt", ">=", limiteData), orderBy("createdAt", "desc"));
@@ -1169,14 +1335,43 @@ function gerirAvisoNotificacoes() {
       btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Lido`; btn.style.borderColor = "var(--border)"; btn.style.color = "var(--text-muted)"; btn.style.cursor = "default";
   };
 
-  document.getElementById("btn-novo-aviso").addEventListener("click", () => document.getElementById("modal-aviso").classList.remove("hidden"));
+  // 1. Ao clicar em "Novo Aviso", preenchemos o input com o teu nome por defeito
+  document.getElementById("btn-novo-aviso").addEventListener("click", () => {
+      document.getElementById("aviso-autor").value = currentUser.email.split("@")[0];
+      document.getElementById("modal-aviso").classList.remove("hidden");
+  });
+
+  // 2. Lógica atualizada de publicação
   document.getElementById("btn-publicar").addEventListener("click", async function() {
-      const btn = this; const txt = document.getElementById("aviso-texto").value;
+      const btn = this; 
+      const txt = document.getElementById("aviso-texto").value;
+      
+      // Captura o nome que está no input. Se deixares em branco, assume o teu.
+      const autorInput = document.getElementById("aviso-autor").value.trim();
+      const autorFinal = autorInput || currentUser.email.split("@")[0];
+
       if(!txt) return;
+      
       btn.disabled = true;
-      await addDoc(collection(db, "Avisos"), { texto: txt, autor: currentUser.email.split("@")[0], createdAt: serverTimestamp() });
-      document.getElementById("modal-aviso").classList.add("hidden"); document.getElementById("aviso-texto").value = ""; btn.disabled = false;
-      fetch(`${API_BASE}/aviso`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ titulo: "Novo Aviso - Radiologia", texto: txt }) }).catch(e => {});
+      
+      // Guarda o novo autor na base de dados
+      await addDoc(collection(db, "Avisos"), { 
+          texto: txt, 
+          autor: autorFinal, 
+          createdAt: serverTimestamp() 
+      });
+      
+      document.getElementById("modal-aviso").classList.add("hidden"); 
+      document.getElementById("aviso-texto").value = ""; 
+      document.getElementById("aviso-autor").value = ""; // Limpa o campo
+      btn.disabled = false;
+      
+      // Envia o Push Notification com o nome do departamento
+      fetch(`${API_BASE}/aviso`, { 
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify({ titulo: `Novo Aviso - ${autorFinal}`, texto: txt }) 
+      }).catch(e => {});
   });
 
   window.verQuemViu = async (id) => {
@@ -1205,11 +1400,32 @@ function gerirAvisoNotificacoes() {
   document.getElementById("btn-med-prox").onclick = () => { updateVisual(document.getElementById("btn-med-prox"), document.getElementById("btn-med-atual")); setViewer("div-med", "dl-med", linksDB.horario_medicos_proximo); };
 
   document.getElementById("btn-login").onclick = async () => {
-      const btn = document.getElementById("btn-login"); const err = document.getElementById("login-error");
-      const u = document.getElementById("login-email").value.trim(); const p = document.getElementById("login-pass").value;
-      if(!u || !p) { err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Preencha todos os campos."; return; }
-      btn.disabled = true; btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A verificar..."; err.innerHTML = "";
-      try { await signInWithEmailAndPassword(auth, u.includes("@") ? u : u + "@imagiologia.local", p); } catch(e) { err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Credenciais inválidas."; btn.disabled = false; btn.innerHTML = "<span class='material-symbols-rounded'>login</span> ENTRAR"; }
+      const btn = document.getElementById("btn-login"); 
+      const err = document.getElementById("login-error");
+      
+      // Captura o input, remove espaços e força letras minúsculas para evitar erros de teclado no mobile
+      const u = document.getElementById("login-email").value.trim().toLowerCase(); 
+      const p = document.getElementById("login-pass").value;
+      
+      if(!u || !p) { 
+          err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Preencha todos os campos."; 
+          return; 
+      }
+      
+      btn.disabled = true; 
+      btn.innerHTML = "<span class='material-symbols-rounded'>hourglass_empty</span> A verificar..."; 
+      err.innerHTML = "";
+      
+      // Se não tiver o "@", assume automaticamente o domínio da Aliva Saúde
+      const emailFinal = u.includes("@") ? u : u + "@alivasaude.com";
+
+      try { 
+          await signInWithEmailAndPassword(auth, emailFinal, p); 
+      } catch(e) { 
+          err.innerHTML = "<span class='material-symbols-rounded' style='font-size:16px;'>error</span> Credenciais inválidas."; 
+          btn.disabled = false; 
+          btn.innerHTML = "<span class='material-symbols-rounded'>login</span> ENTRAR"; 
+      }
   };
 
   document.getElementById("btn-forgot").onclick = () => {
